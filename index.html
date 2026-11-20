@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Biophilic Study Room</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Caveat:wght@600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: header, a cinematic stage (animated room + caption bar) beside a short reading panel, then the live focus test, then key learning */
+  --bg:#edf0e8;
+  --surface:#f9faf6;
+  --ink:#1b231d;
+  --muted:#56625a;
+  --line:#d3dacd;
+  --accent:#33603b;
+  --accent-ink:#ffffff;
+  --wood:#9a6533;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+  --hand:"Caveat","Segoe Print",cursive;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#101511; --surface:#182019; --ink:#e3eae1; --muted:#9cab9d; --line:#2b362c;
+    --accent:#8fc596; --accent-ink:#0e1a10; --wood:#d6a466; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#101511; --surface:#182019; --ink:#e3eae1; --muted:#9cab9d; --line:#2b362c;
+  --accent:#8fc596; --accent-ink:#0e1a10; --wood:#d6a466; color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--body)}
+h1,h2,h3,h4{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+button,select,input,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.wrap{max-width:1340px;margin:0 auto;padding:0 20px}
+.top{padding:26px 0 16px}
+.eyebrow{font:700 12.5px/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--wood);margin:0 0 8px}
+h1{font-size:clamp(30px,4.2vw,46px);font-weight:750;line-height:1.05}
+.lede{max-width:62ch;color:var(--muted);margin:10px 0 0;font-size:17px}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:22px;align-items:start}
+@media (max-width:1060px){.layout{grid-template-columns:1fr}}
+
+/* ---------- stage ---------- */
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.scene-wrap{position:relative;aspect-ratio:1200/720;background:#d9d4c7;overflow:hidden;user-select:none;-webkit-user-select:none;touch-action:pan-y}
+#scene{display:block;width:100%;height:100%;transition:filter 1.6s ease}
+#scene.notrans{transition:none}
+#scene.photo{filter:sepia(.45) saturate(.7) contrast(1.08) brightness(1.05) blur(.9px)}
+
+#scene .grow{transform-box:fill-box;transform-origin:var(--ox,50%) var(--oy,100%);transition:transform 1s cubic-bezier(.34,1.45,.55,1) var(--d,0s),opacity .6s ease var(--d,0s)}
+#scene:not(.grown) .grow{transform:scale(.02);opacity:0}
+#scene .sway{transform-box:fill-box;transform-origin:50% 100%;animation:sway var(--dur,6s) ease-in-out var(--del,0s) infinite alternate}
+#scene .sway.hang{transform-origin:50% 0}
+@keyframes sway{from{transform:rotate(calc(-1 * var(--amp,1.6deg)))}to{transform:rotate(var(--amp,1.6deg))}}
+#scene.breezy .sway{--amp:4.5deg}
+#scene .curtain{transform-box:fill-box;transform-origin:50% 0;animation:curtain var(--dur,7s) ease-in-out infinite alternate}
+@keyframes curtain{from{transform:skewX(-1.2deg)}to{transform:skewX(1.8deg)}}
+#scene.breezy .curtain{animation:curtainBig 2.6s ease-in-out infinite alternate}
+@keyframes curtainBig{from{transform:skewX(-3deg)}to{transform:skewX(6deg)}}
+#scene .clouds{animation:drift 55s linear infinite alternate}
+@keyframes drift{to{transform:translateX(-120px)}}
+#scene .bird{animation:fly 14s linear -4s infinite}
+@keyframes fly{0%{transform:translate(1180px,150px)}28%{transform:translate(790px,112px)}28.1%,100%{transform:translate(760px,112px)}}
+#scene .flap{transform-box:fill-box;transform-origin:50% 60%;animation:flap .26s ease-in-out infinite alternate}
+@keyframes flap{to{transform:scaleY(-.5)}}
+#scene .dap{animation:dap var(--dur,5s) ease-in-out var(--del,0s) infinite alternate}
+@keyframes dap{from{transform:translate(-6px,2px);opacity:.45}to{transform:translate(7px,-3px);opacity:1}}
+#scene .mote{animation:mote var(--dur,9s) linear var(--del,0s) infinite}
+@keyframes mote{0%{transform:translate(0,0);opacity:0}20%{opacity:.95}100%{transform:translate(-34px,-70px);opacity:0}}
+#scene .steam{animation:steam 3.4s ease-out var(--del,0s) infinite}
+@keyframes steam{0%{transform:translateY(4px);opacity:0}30%{opacity:.75}100%{transform:translateY(-20px);opacity:0}}
+#scene .air{stroke-dasharray:90 230;animation:air 5.5s linear var(--del,0s) infinite;opacity:.35;transition:opacity .8s}
+#scene.breezy .air{opacity:1;stroke-width:3.2}
+@keyframes air{from{stroke-dashoffset:320}to{stroke-dashoffset:0}}
+#scene .drip{stroke-dasharray:5 7;animation:drip 1.1s linear infinite}
+@keyframes drip{to{stroke-dashoffset:-24}}
+#scene .flicker{animation:flicker 6.5s linear infinite}
+@keyframes flicker{0%,88%,90%,93%,100%{opacity:1}89%{opacity:.35}92%{opacity:.6}}
+#scene .pop{transform-box:fill-box;transform-origin:50% 50%;opacity:0;animation:pop 7.5s ease var(--del,0s) infinite}
+@keyframes pop{0%{opacity:0;transform:scale(.8)}4%,40%{opacity:1;transform:scale(1)}46%,100%{opacity:0;transform:scale(1)}}
+#scene .buzz{animation:buzz 3.6s linear infinite}
+@keyframes buzz{0%,80%,100%{transform:translate(0,0)}82%{transform:translate(-2px,0)}84%{transform:translate(2px,0)}86%{transform:translate(-2px,0)}88%{transform:translate(2px,0)}}
+@media (prefers-reduced-motion:reduce){#scene *{animation:none!important;transition:none!important}}
+
+.tag{position:absolute;top:12px;padding:6px 12px;border-radius:999px;font:700 12px/1 var(--body);letter-spacing:.08em;text-transform:uppercase;background:rgba(20,24,22,.75);color:#fff;transition:opacity .3s;pointer-events:none;z-index:3}
+.tag-before{left:12px;background:rgba(150,40,38,.85)}
+.tag-after{right:12px;background:rgba(36,74,42,.88)}
+
+.divider{position:absolute;top:0;bottom:0;width:28px;margin-left:-14px;cursor:ew-resize;z-index:5;touch-action:none}
+.divider::before{content:"";position:absolute;left:13px;top:0;bottom:0;width:2px;background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.15),0 0 12px rgba(0,0,0,.25)}
+.handle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;border:2px solid #fff;background:#24432a;color:#fff;font:700 18px/1 var(--body);box-shadow:0 4px 14px rgba(0,0,0,.3);cursor:ew-resize;display:grid;place-items:center;padding:0}
+
+.hotspots{position:absolute;inset:0;pointer-events:none;z-index:4}
+.hs{position:absolute;transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;background:#fff;color:#1f4627;border:2px solid #2f5d37;font:700 14px/1 var(--body);box-shadow:0 2px 10px rgba(0,0,0,.28);cursor:pointer;pointer-events:auto;display:grid;place-items:center;padding:0;transition:transform .2s,background .2s,color .2s}
+.hs::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid rgba(255,255,255,.85);animation:pulse 2.4s ease-out infinite}
+.hs:hover{transform:translate(-50%,-50%) scale(1.1)}
+.hs.active{background:#2f5d37;color:#fff;border-color:#fff;transform:translate(-50%,-50%) scale(1.2)}
+@keyframes pulse{0%{transform:scale(.85);opacity:.9}100%{transform:scale(1.6);opacity:0}}
+@media (max-width:640px){.hs{width:26px;height:26px;font-size:12px}.handle{width:36px;height:36px}}
+@media (prefers-reduced-motion:reduce){.hs::after{animation:none}}
+
+.fx{position:absolute;inset:0;pointer-events:none;z-index:6}
+.callout{position:absolute;left:0;top:0;transform:translate(-50%,-50%) scale(.5);opacity:0;padding:.45em .95em;border-radius:999px;background:#c8322f;color:#fff;font:700 clamp(11px,1.45vw,22px)/1.1 var(--body);white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.3);transition:transform .45s cubic-bezier(.3,1.6,.5,1),opacity .3s}
+.callout.good{background:#2f5d37}
+.callout.on{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.clock{position:absolute;top:3.5%;left:2.5%;background:rgba(12,16,14,.78);color:#fff;border-radius:14px;padding:.7em 1em;opacity:0;transition:opacity .4s;display:grid;gap:.35em}
+.clock.on{opacity:1}
+.clock b{font:800 clamp(22px,3.4vw,52px)/1 var(--display);font-variant-numeric:tabular-nums}
+.clock span{display:flex;gap:.5em;align-items:center;font-size:clamp(11px,1.3vw,19px);font-variant-numeric:tabular-nums}
+.clock i{width:1em;height:1em;border-radius:50%;display:inline-block;box-shadow:0 0 12px currentColor}
+.polaroid{position:absolute;inset:0;opacity:0;transition:opacity .9s;box-shadow:inset 0 0 0 clamp(10px,2.4vw,34px) #fbfaf5,inset 0 calc(-1 * clamp(42px,7.5vw,104px)) 0 0 #fbfaf5}
+.polaroid.on{opacity:1}
+.polaroid span{position:absolute;left:0;right:0;bottom:clamp(8px,1.6vw,24px);text-align:center;font:600 clamp(20px,3.6vw,52px)/1 var(--hand);color:#2b2b2b}
+.flash{position:absolute;inset:0;background:#fff;opacity:0}
+.flash.go{animation:flash .9s ease-out}
+@keyframes flash{0%{opacity:.95}100%{opacity:0}}
+.badge{position:absolute;top:4%;left:50%;transform:translateX(-50%);background:rgba(20,28,22,.82);color:#fff;padding:.55em 1.1em;border-radius:999px;font:700 clamp(11px,1.4vw,20px)/1 var(--body);opacity:0;transition:opacity .6s;white-space:nowrap}
+.badge.on{opacity:1}
+.fullbtn{position:absolute;right:12px;bottom:12px;z-index:7;pointer-events:auto}
+
+.rcard{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.92);opacity:0;transition:opacity .4s,transform .4s;width:min(80%,860px);background:rgba(250,251,247,.97);color:#1b231d;border-radius:18px;padding:2.4% 2.8%;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.rcard.on{opacity:1;transform:translate(-50%,-50%)}
+.rc-eyebrow{font:700 clamp(10px,1.15vw,16px)/1 var(--body);letter-spacing:.08em;text-transform:uppercase;color:#9a6533;margin:0 0 .8em}
+.rc-cols{display:grid;grid-template-columns:1fr 1fr;gap:3%}
+.rc-col{border-radius:12px;padding:5% 6%}
+.rc-col.old{background:#e2e6eb}
+.rc-col.new{background:#e1ebd5}
+.rc-col h4{font:700 clamp(12px,1.5vw,22px)/1.1 var(--display);margin:0 0 .6em}
+.mini{font:clamp(10px,1.2vw,17px)/1.4 var(--body);min-height:2.9em;color:#33403a;position:relative}
+.mini .bad{color:#c8322f;text-decoration:underline}
+.mini .caret{border-left:2px solid #33403a;margin-left:1px}
+.mini .ping{position:absolute;right:0;top:-1.6em;background:#fff;border-radius:8px;padding:.25em .7em;font-size:.82em;box-shadow:0 4px 12px rgba(0,0,0,.2);color:#111;white-space:nowrap}
+.rc-num{display:flex;align-items:baseline;gap:.35em;margin-top:.5em}
+.rc-num b{font:800 clamp(28px,4.6vw,68px)/1 var(--display);font-variant-numeric:tabular-nums}
+.rc-num span{font-weight:700;color:#56625a;font-size:clamp(11px,1.3vw,18px)}
+.rc-sub{font-size:clamp(10px,1.15vw,16px);color:#56625a;font-variant-numeric:tabular-nums;opacity:0;transition:opacity .5s}
+.rc-sub.on{opacity:1}
+.rc-foot{margin:.8em 0 0;font:700 clamp(12px,1.6vw,24px)/1.2 var(--display);color:#2f5d37;opacity:0;transition:opacity .5s}
+.rc-foot.on{opacity:1}
+.rc-note{margin:.3em 0 0;font-size:clamp(9px,.95vw,13px);color:#6b766e}
+
+/* ---------- caption ---------- */
+.caption{border-top:1px solid var(--line);padding:14px 18px 14px}
+.cap-idle{display:flex;gap:12px 16px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.cap-idle p{margin:0;max-width:56ch;color:var(--muted)}
+.cap-idle strong{color:var(--ink)}
+.cap-idle .btns{display:flex;gap:8px;flex-wrap:wrap}
+.cap-tour{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 20px;align-items:center}
+.cap-tag{display:flex;gap:10px;align-items:center;font:700 12px/1 var(--body);letter-spacing:.07em;text-transform:uppercase;color:var(--wood);margin:0 0 6px}
+.cap-tag em{font-style:normal;color:var(--muted);letter-spacing:0;text-transform:none;font-weight:400;font-variant-numeric:tabular-nums}
+#capTitle{font-size:24px;font-weight:720;line-height:1.15}
+#capBody{margin:4px 0 0;font-size:17px;color:var(--muted)}
+.cap-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end;max-width:380px;transition:opacity .3s}
+.dots{grid-column:1/-1;display:flex;gap:4px;margin-top:10px}
+.dots button{flex:1;height:5px;border:0;border-radius:3px;background:var(--line);padding:0;cursor:pointer;overflow:hidden;position:relative}
+.dots button.done{background:color-mix(in srgb,var(--accent) 50%,var(--line))}
+.dots button span{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--accent)}
+.pace{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.pace select{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:4px 6px}
+.pace input{accent-color:var(--accent)}
+@media (max-width:760px){.cap-tour{grid-template-columns:1fr}.cap-ctl{justify-content:flex-start;max-width:none}}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:9px 16px;cursor:pointer;font-weight:700;font-size:14.5px;line-height:1.2}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.sm{padding:6px 12px;font-size:13.5px}
+.btn.ghost{background:transparent}
+.btn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+
+/* fullscreen / TV */
+.stage:fullscreen{background:#0b0f0c;display:flex;flex-direction:column;justify-content:center;border:0;border-radius:0}
+.stage:fullscreen .scene-wrap,.stage:fullscreen .caption{width:min(100vw,calc(79vh * 1.6667));margin:0 auto}
+.stage:fullscreen .caption{background:#111612;color:#eef3ec;border-top:0;padding:1.6vh 2.4vw 2vh}
+.stage:fullscreen #capTitle{font-size:clamp(24px,2.7vw,50px)}
+.stage:fullscreen #capBody{font-size:clamp(16px,1.65vw,30px);color:#c3cec2}
+.stage:fullscreen .cap-tag{font-size:clamp(12px,1.05vw,18px);color:#e0b071}
+.stage:fullscreen .cap-tag em,.stage:fullscreen .pace{color:#9fae9f}
+.stage:fullscreen .cap-idle p{color:#c3cec2}
+.stage:fullscreen .cap-idle strong{color:#fff}
+.stage:fullscreen .btn{background:#1d251e;color:#eef3ec;border-color:#2e3a30}
+.stage:fullscreen .btn.primary{background:#8fc596;color:#0e1a10;border-color:#8fc596}
+.stage:fullscreen .pace select{background:#1d251e;border-color:#2e3a30}
+.stage:fullscreen .cap-ctl{opacity:.3}
+.stage:fullscreen .cap-ctl:hover,.stage:fullscreen .cap-ctl:focus-within{opacity:1}
+.stage:fullscreen .dots button{background:#2b362c}
+.stage:fullscreen .dots button.done{background:#4d6b52}
+.stage:fullscreen .dots button span{background:#8fc596}
+.stage.idle,.stage.idle *{cursor:none!important}
+
+/* ---------- controls ---------- */
+.controls{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:flex-end;justify-content:space-between;padding:16px 4px 0}
+.ctl.time{flex:1 1 420px;min-width:0}
+.ctl.time .row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.ctl.time label{font-weight:700;font-size:14.5px}
+.presets{display:flex;gap:6px;flex-wrap:wrap}
+.presets button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:700;cursor:pointer}
+.presets button:hover{border-color:var(--accent)}
+.lampread{margin:8px 0 0;font-size:14px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.swatch{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.2);display:inline-block}
+.ctl.btns{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:9px 14px;font-weight:700;font-size:14px;cursor:pointer}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on{background:var(--ink);color:var(--bg)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:8px;cursor:pointer;
+  background:linear-gradient(90deg,#f4b98c 0%,#86bdea 12%,#4fa2e6 38%,#63a3dc 59%,#f59a52 74%,#433872 82%,#080c22 100%)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:#fff;border:3px solid #24432a;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid #24432a}
+
+/* ---------- panel ---------- */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;position:sticky;top:16px}
+@media (max-width:1060px){.panel{position:static}}
+.panel h2{font-size:23px;font-weight:720;line-height:1.12}
+.panel .sub{color:var(--muted);margin:6px 0 12px;font-size:15px}
+.moves{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.moves button{width:100%;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:center;text-align:left;padding:7px 8px;border:1px solid transparent;border-radius:10px;background:transparent;cursor:pointer}
+.moves button:hover{border-color:var(--line);background:var(--bg)}
+.num{width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:700 13px/1 var(--body)}
+.moves b{display:block;font-size:15px;line-height:1.25}
+.moves small{display:block;color:var(--muted);font-size:13px;line-height:1.3}
+.d-head{display:flex;gap:12px;align-items:center}
+.d-head .num{width:34px;height:34px;font-size:15px;flex:none}
+.ptag{display:inline-block;margin:12px 0 0;padding:5px 10px;border-radius:999px;background:var(--bg);border:1px solid var(--line);font-size:13px;font-weight:700;color:var(--wood)}
+.kv{display:grid;gap:12px;margin-top:14px}
+.kv p{margin:0;font-size:15.5px}
+.kv b{display:block;font:700 11.5px/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.d-nav{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+
+/* ---------- focus test ---------- */
+.test{margin-top:30px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px}
+.test-head{display:flex;justify-content:space-between;align-items:flex-end;gap:14px 24px;flex-wrap:wrap;margin-bottom:16px}
+.test-head h2{font-size:26px;font-weight:740}
+.test-head p{margin:6px 0 0;max-width:58ch}
+.test-btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.arena{position:relative;border-radius:14px;padding:22px 24px 26px;min-height:250px;overflow:hidden;transition:background .6s,color .6s;cursor:text;background:var(--bg);border:1px solid var(--line)}
+.arena.old{background:linear-gradient(180deg,#cfd5dc,#b7bfc8);color:#1b1f24;border-color:#a9b1ba}
+.arena.new{background:radial-gradient(120% 140% at 85% 0%,#fff3d6 0%,#e7efd9 40%,#d3e2c2 100%);color:#1c2a1d;border-color:#bfd0ad}
+.deco-old,.deco-new{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .6s}
+.arena.old .deco-old,.arena.new .deco-new{opacity:1}
+.deco-old i{position:absolute;width:34px;height:34px;opacity:.7;box-shadow:0 2px 4px rgba(0,0,0,.12)}
+.deco-new svg{position:absolute;right:-30px;top:-20px;width:300px;height:300px;opacity:.16}
+.deco-new .lf{transform-box:fill-box;transform-origin:50% 0;animation:sway 6s ease-in-out infinite alternate;--amp:3deg}
+@media (prefers-reduced-motion:reduce){.deco-new .lf{animation:none}}
+.arena-top{position:relative;display:flex;justify-content:space-between;align-items:flex-start;gap:12px 20px;flex-wrap:wrap;margin-bottom:14px}
+.arena-top p{margin:0;font-weight:700;max-width:48ch}
+.tstats{display:flex;gap:22px}
+.tstats div{display:grid;justify-items:end}
+.tstats b{font:800 30px/1 var(--display);font-variant-numeric:tabular-nums}
+.tstats span{font-size:12.5px;opacity:.75}
+.passage{position:relative;height:calc(1.65em * 3);overflow:hidden;font:400 clamp(18px,2.1vw,24px)/1.65 var(--body);letter-spacing:.01em}
+.passage .todo{opacity:.45}
+.passage .bad{color:#b3261e;background:rgba(229,72,77,.18);border-radius:2px}
+.passage .cur{box-shadow:inset 2px 0 0 currentColor;opacity:.5;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{box-shadow:none}}
+.sr-input{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;border:0;padding:0;resize:none}
+.toasts{position:absolute;right:14px;top:14px;display:grid;gap:8px;z-index:3;width:min(300px,70%)}
+.toast{background:#fff;color:#111;border-radius:12px;padding:10px 14px;box-shadow:0 8px 24px rgba(0,0,0,.25);animation:tin .3s ease-out;transition:opacity .3s,transform .3s}
+.toast b{display:block;font-size:13px}
+.toast span{font-size:14px}
+.toast.out{opacity:0;transform:translateX(20px)}
+@keyframes tin{from{transform:translateY(-12px);opacity:0}}
+.flick{position:absolute;inset:0;background:#0b0d10;opacity:0;pointer-events:none;z-index:2}
+.flick.go{animation:flick .55s linear}
+@keyframes flick{0%,100%{opacity:0}20%{opacity:.3}40%{opacity:.05}65%{opacity:.22}}
+.arena.shake{animation:shake .35s}
+@keyframes shake{20%{transform:translateX(-3px)}40%{transform:translateX(3px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+@media (prefers-reduced-motion:reduce){.arena.shake,.flick.go,.passage .cur{animation:none}}
+.done-msg{position:absolute;inset:0;display:grid;place-items:center;background:rgba(250,251,247,.82);color:#1b231d;font:700 22px/1.3 var(--display);text-align:center;z-index:4;padding:20px}
+.results{margin-top:18px;display:grid;gap:14px}
+.res-grid{display:grid;grid-template-columns:110px 1fr 1fr;gap:10px 14px;align-items:center}
+.res-grid .h{font-weight:700;font-size:14px;color:var(--muted)}
+.bar2{height:28px;border-radius:7px;background:var(--bg);position:relative;overflow:hidden;border:1px solid var(--line)}
+.bar2 span{position:absolute;inset:0 auto 0 0;border-radius:6px}
+.bar2.old span{background:#9aa7b4}
+.bar2.new span{background:#5f9467}
+.bar2 em{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-style:normal;font-weight:700;font-size:14px;color:#111;font-variant-numeric:tabular-nums}
+.res-sum{font:700 18px/1.3 var(--display);margin:0}
+.fine{font-size:13px;color:var(--muted);margin:12px 0 0}
+@media (max-width:560px){.res-grid{grid-template-columns:80px 1fr 1fr}}
+
+footer{margin:34px auto 40px}
+.learn{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;border-top:1px solid var(--line);padding-top:24px}
+@media (max-width:860px){.learn{grid-template-columns:1fr}}
+.learn h2{font-size:22px;margin-bottom:8px}
+.learn p{margin:0;max-width:60ch}
+.refs{margin:0;padding-left:18px;font-size:13.5px;color:var(--muted);display:grid;gap:4px}
+.refs i{font-style:italic}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <p class="eyebrow">My study corner · Biophilic redesign · Theme: Well-being</p>
+    <h1>My Biophilic Study Room</h1>
+    <p class="lede">My real study corner, redrawn as an animation, and how I plan to redesign it with light, air, plants, natural materials and the sound of water.</p>
+  </header>
+
+  <main class="layout">
+    <section>
+      <div class="stage" id="stage">
+        <div class="scene-wrap" id="sceneWrap">
+          <svg id="scene" class="grown" viewBox="0 0 1200 720" role="img" aria-label="Animated illustration of my study room: the cluttered original and the biophilic redesign.">
+            <defs>
+              <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop id="skyTop" offset="0" stop-color="#4fa2e6"/><stop id="skyBot" offset="1" stop-color="#cde8f9"/>
+              </linearGradient>
+              <linearGradient id="wallA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0eadc"/><stop offset="1" stop-color="#e1d8c4"/></linearGradient>
+              <linearGradient id="floorA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b58956"/><stop offset="1" stop-color="#c99d69"/></linearGradient>
+              <linearGradient id="wallB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9ccce"/><stop offset="1" stop-color="#b6babd"/></linearGradient>
+              <linearGradient id="beamGrad" x1="1" y1="0" x2="0.6" y2="1">
+                <stop id="beamS0" offset="0" stop-color="#fff2c9" stop-opacity=".95"/><stop id="beamS1" offset="1" stop-color="#fff2c9" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="fluoroCone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e6f1ff" stop-opacity=".6"/><stop offset="1" stop-color="#e6f1ff" stop-opacity=".05"/></linearGradient>
+              <radialGradient id="lampGlowGrad"><stop id="glowIn" offset="0" stop-color="#fff7ef" stop-opacity="1"/><stop id="glowOut" offset="1" stop-color="#fff7ef" stop-opacity="0"/></radialGradient>
+              <linearGradient id="coneGrad" x1="0" y1="0" x2="0" y2="1"><stop id="coneTop" offset="0" stop-color="#fff7ef" stop-opacity=".9"/><stop id="coneBot" offset="1" stop-color="#fff7ef" stop-opacity=".1"/></linearGradient>
+              <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
+              <clipPath id="beforeClip"><rect id="beforeClipRect" x="0" y="0" width="600" height="720"/></clipPath>
+              <clipPath id="glassA"><rect x="845" y="95" width="290" height="300"/></clipPath>
+              <clipPath id="mossClip"><rect x="72" y="120" width="140" height="260" rx="3"/></clipPath>
+            </defs>
+            <g id="after"></g>
+            <g id="before" clip-path="url(#beforeClip)"></g>
+          </svg>
+          <span class="tag tag-before" id="tagBefore">My room · before</span>
+          <span class="tag tag-after" id="tagAfter">Redesign</span>
+          <div class="hotspots" id="hotspots"></div>
+          <div class="fx" id="fx">
+            <div class="polaroid" id="polaroid"><span>my study corner</span></div>
+            <div class="flash" id="flash"></div>
+            <div class="badge" id="badge">My room, redrawn as an animation</div>
+            <div class="clock" id="clock"><b id="clockTime">12:30 PM</b><span><i id="clockSw"></i><em id="clockK">5500 K</em>· <em id="clockLabel">Midday focus</em></span></div>
+          </div>
+          <div class="divider" id="divider">
+            <button class="handle" id="handle" role="slider" aria-label="Compare before and after" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">&#8249;&#8250;</button>
+          </div>
+          <button class="btn sm fullbtn" id="fullBtn" hidden>Back to full room</button>
+        </div>
+
+        <div class="caption">
+          <div class="cap-idle" id="capIdle">
+            <p id="idleText"><strong>Drag the handle</strong> to compare, or tap a number to zoom in on a change.</p>
+            <div class="btns">
+              <button class="btn" id="tourBtn">Play tour</button>
+              <button class="btn primary" id="presentBtn">Present full screen</button>
+            </div>
+          </div>
+          <div class="cap-tour" id="capTour" hidden>
+            <div>
+              <p class="cap-tag"><span id="capTag"></span><em id="capCount"></em></p>
+              <h2 id="capTitle"></h2>
+              <p id="capBody"></p>
+            </div>
+            <div class="cap-ctl">
+              <button class="btn sm" id="prevBtn">Back</button>
+              <button class="btn sm" id="pauseBtn">Pause</button>
+              <button class="btn sm" id="nextBtn">Next</button>
+              <label class="pace"><input type="checkbox" id="autoAdv" checked> Auto</label>
+              <label class="pace" for="pace">Step
+                <select id="pace"><option value="5">5 s</option><option value="6" selected>6 s</option><option value="8">8 s</option><option value="10">10 s</option></select>
+              </label>
+              <button class="btn sm ghost" id="exitBtn">Exit</button>
+            </div>
+            <div class="dots" id="dots"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="ctl time">
+          <div class="row">
+            <label for="timeRange">Lighting through the day</label>
+            <div class="presets" role="group" aria-label="Time presets">
+              <button data-t="8">Morning</button><button data-t="12.5">Midday</button><button data-t="18.5">Sunset</button><button data-t="22">Night</button>
+            </div>
+          </div>
+          <input type="range" id="timeRange" min="6" max="23" step="0.25" value="12.5">
+          <p class="lampread"><span class="swatch" id="swatch"></span><span id="lampOut"></span><span class="muted" id="timeOut"></span></p>
+        </div>
+        <div class="ctl btns">
+          <div class="seg" role="group" aria-label="View">
+            <button data-p="100">Before</button><button data-p="50" class="on">Compare</button><button data-p="0">After</button>
+          </div>
+          <button class="btn" id="soundBtn" aria-pressed="false">Sound off</button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </main>
+
+  <section class="test" id="test">
+    <div class="test-head">
+      <div>
+        <p class="eyebrow">Evidence</p>
+        <h2>1-minute focus test</h2>
+        <p class="muted">Type the passage once in my old setup and once in the new one. Your scores appear in the tour.</p>
+      </div>
+      <div class="test-btns">
+        <label class="pace" for="testDur">Length <select id="testDur"><option value="30">30 s</option><option value="60" selected>60 s</option></select></label>
+        <button class="btn" id="startOld">Start: old setup</button>
+        <button class="btn primary" id="startNew">Start: new setup</button>
+      </div>
+    </div>
+    <div class="arena" id="arena">
+      <div class="deco-old" aria-hidden="true">
+        <i style="left:1%;bottom:-12px;background:#f4e04d;transform:rotate(-8deg)"></i>
+        <i style="left:7%;bottom:-16px;background:#f59ac0;transform:rotate(6deg)"></i>
+        <i style="right:8%;bottom:-14px;background:#a7e05a;transform:rotate(-4deg)"></i>
+        <i style="right:2%;bottom:-10px;background:#f6a04d;transform:rotate(10deg)"></i>
+      </div>
+      <div class="deco-new" aria-hidden="true">
+        <svg viewBox="0 0 300 300"><g fill="#2f5d37">
+          <g class="lf"><path d="M150 0 C150 60 140 120 150 300" stroke="#2f5d37" stroke-width="4" fill="none"/><ellipse cx="120" cy="80" rx="30" ry="14" transform="rotate(-30 120 80)"/><ellipse cx="180" cy="120" rx="34" ry="15" transform="rotate(25 180 120)"/><ellipse cx="118" cy="170" rx="32" ry="14" transform="rotate(-25 118 170)"/><ellipse cx="182" cy="220" rx="30" ry="13" transform="rotate(30 182 220)"/></g>
+          <g class="lf" style="animation-duration:7.3s"><path d="M240 0 C240 50 236 100 244 200" stroke="#2f5d37" stroke-width="3" fill="none"/><ellipse cx="220" cy="60" rx="22" ry="10" transform="rotate(-30 220 60)"/><ellipse cx="262" cy="110" rx="24" ry="11" transform="rotate(28 262 110)"/></g>
+        </g></svg>
+      </div>
+      <div class="flick" id="flick"></div>
+      <div class="toasts" id="toasts"></div>
+      <div class="arena-top">
+        <p id="testMsg">Choose a setup to begin. The timer starts on your first key.</p>
+        <div class="tstats">
+          <div><b id="tLeft">60</b><span>seconds left</span></div>
+          <div><b id="tWpm">0</b><span>words / min</span></div>
+          <div><b id="tAcc">100%</b><span>accuracy</span></div>
+        </div>
+      </div>
+      <div class="passage" id="passage"></div>
+      <textarea id="typeInput" class="sr-input" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Type the passage here"></textarea>
+      <div class="done-msg" id="doneMsg" hidden></div>
+    </div>
+    <div class="results" id="results" hidden></div>
+    <p class="fine">Simulated conditions, one person, one minute: a demonstration, not a scientific study. For a fairer result, do each setup twice and keep the second score, so practice doesn't favour one side.</p>
+  </section>
+
+  <footer>
+    <div class="learn">
+      <div>
+        <p class="eyebrow">Key learning</p>
+        <h2>Biophilic design is more than adding plants</h2>
+        <p>It connects a space with nature through light, air, living things, materials, water, movement and shelter. Most of my changes cost very little: I moved furniture, opened the blinds and added a few plants. Small changes, big impact on well-being and focus.</p>
+      </div>
+      <div>
+        <p class="eyebrow">Sources</p>
+        <ol class="refs">
+          <li>Kaplan, R. &amp; Kaplan, S. (1989). <i>The Experience of Nature.</i></li>
+          <li>Ulrich, R. S. (1984). View through a window may influence recovery from surgery. <i>Science, 224.</i></li>
+          <li>Wilson, E. O. (1984). <i>Biophilia.</i> Harvard University Press.</li>
+          <li>Appleton, J. (1975). <i>The Experience of Landscape.</i></li>
+          <li>Browning, W., Ryan, C. &amp; Clancy, J. (2014). <i>14 Patterns of Biophilic Design.</i> Terrapin Bright Green.</li>
+          <li>Allen, J. G. et al. (2016). Cognitive function scores and CO₂, ventilation and VOC exposures in office workers. <i>Environmental Health Perspectives, 124.</i></li>
+          <li>Chang, A.-M. et al. (2015). Evening use of light-emitting eReaders affects sleep and next-morning alertness. <i>PNAS, 112.</i></li>
+          <li>Taylor, R. P. (2006). Reduction of physiological stress using fractal art and architecture. <i>Leonardo, 39.</i></li>
+        </ol>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+(() => {
+const NS = 'http://www.w3.org/2000/svg';
+const RM = !!(window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches);
+const $ = id => document.getElementById(id);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const ease = k => k < .5 ? 4*k*k*k : 1 - Math.pow(-2*k + 2, 3) / 2;
+
+function el(tag, attrs, parent){
+  const e = document.createElementNS(NS, tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+function rng(seed){
+  return function(){
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    let t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function smoothPath(p){
+  let d = `M${p[0][0]} ${p[0][1]}`;
+  for (let i = 0; i < p.length - 1; i++){
+    const p0 = p[i-1] || p[i], p1 = p[i], p2 = p[i+1], p3 = p[i+2] || p2;
+    d += ` C${p1[0] + (p2[0]-p0[0])/6} ${p1[1] + (p2[1]-p0[1])/6} ${p2[0] - (p3[0]-p1[0])/6} ${p2[1] - (p3[1]-p1[1])/6} ${p2[0]} ${p2[1]}`;
+  }
+  return d;
+}
+function leaf(g, x, y, rot, s, col){
+  el('path', {d:'M0 0 C-8 -3 -9.5 -13 0 -18 C9.5 -13 8 -3 0 0Z', fill:col, transform:`translate(${x} ${y}) rotate(${rot}) scale(${s})`}, g);
+}
+function vine(g, pts, gap, r, cols){
+  el('path', {d:smoothPath(pts), fill:'none', stroke:'#58783a', 'stroke-width':2, 'stroke-linecap':'round'}, g);
+  const seg = []; let tot = 0;
+  for (let i = 0; i < pts.length - 1; i++){
+    const dx = pts[i+1][0]-pts[i][0], dy = pts[i+1][1]-pts[i][1], l = Math.hypot(dx, dy);
+    seg.push({a:pts[i], dx, dy, l, s:tot}); tot += l;
+  }
+  let side = 1;
+  for (let d = 4; d < tot; d += gap * (0.8 + r()*0.4)){
+    const sg = seg.find(s => d >= s.s && d <= s.s + s.l) || seg[seg.length-1];
+    const f = (d - sg.s) / sg.l;
+    const dir = Math.atan2(sg.dy, sg.dx) * 180 / Math.PI;
+    leaf(g, sg.a[0] + sg.dx*f, sg.a[1] + sg.dy*f, dir + 90 + side*(45 + r()*25), 0.75 + r()*0.5, cols[Math.floor(r()*cols.length)]);
+    side *= -1;
+  }
+}
+const swayAttr = (r, amp, base) => ({class:'sway', style:`--dur:${((base||4.5) + r()*3.4).toFixed(2)}s;--del:-${(r()*5).toFixed(2)}s;--amp:${amp}deg`});
+function potCluster(g, cx, top, r, cols){
+  for (let i = 0; i < 10; i++) leaf(g, cx + (r()-.5)*28, top + 2, (r()-.5)*150, 1 + r()*0.35, cols[Math.floor(r()*cols.length)]);
+}
+function shelfPot(g, cx, base){
+  el('path', {d:`M${cx-22} ${base-36} H${cx+22} L${cx+17} ${base} H${cx-17}Z`, fill:'#ece5d7', stroke:'#d3c9b6', 'stroke-width':1.5}, g);
+  el('rect', {x:cx-21, y:base-30, width:42, height:4, fill:'#c9b99c'}, g);
+}
+function herbPot(g, x, base, r){
+  const lg = el('g', swayAttr(r, 2.2, 3.5), g);
+  for (let i = 0; i < 8; i++) el('ellipse', {cx:x + (r()-.5)*22, cy:base-30 - r()*16, rx:5.5, ry:3.2, fill:['#5f8f45','#6fa052','#4e7d3a'][i%3], transform:`rotate(${(r()-.5)*90} ${x} ${base-34})`}, lg);
+  el('path', {d:`M${x-13} ${base-22} H${x+13} L${x+10} ${base} H${x-10}Z`, fill:'#c98b63'}, g);
+  el('rect', {x:x-15, y:base-25, width:30, height:5, rx:1, fill:'#b67951'}, g);
+}
+function curtain(g, x0, x1, dur){
+  const m = (x0+x1)/2;
+  const cg = el('g', {class:'curtain', style:`--dur:${dur}s`}, g);
+  el('path', {d:`M${x0} 70 H${x1} V440 Q${x1-8} 450 ${m} 440 Q${x0+8} 450 ${x0} 440Z`, fill:'#f7f1e5', opacity:.94, stroke:'#e6dccb'}, cg);
+  for (let i = 1; i < 4; i++) el('line', {x1:x0 + i*(x1-x0)/4, y1:72, x2:x0 + i*(x1-x0)/4 + (i-2)*2, y2:438, stroke:'#e2d6c1', 'stroke-width':2}, cg);
+}
+function mug(g, x, base, col){
+  el('path', {d:`M${x+22} ${base-20} q10 2 0 14`, fill:'none', stroke:col === '#ffffff' ? '#c9cdd0' : col, 'stroke-width':3.5}, g);
+  el('rect', {x, y:base-26, width:22, height:26, rx:3, fill:col, stroke:'rgba(0,0,0,.15)'}, g);
+}
+
+/* ================= AFTER: the redesign ================= */
+function buildAfter(g){
+  const r = rng(11);
+  const greens = ['#5c8c3c','#6c9c45','#4d7a34','#7fae55','#8fbb5e'];
+  el('rect', {x:0, y:0, width:1200, height:560, fill:'url(#wallA)'}, g);
+  el('rect', {x:0, y:560, width:1200, height:160, fill:'url(#floorA)'}, g);
+  const pl = el('g', {stroke:'#94693d', 'stroke-opacity':.45, 'stroke-width':1.5}, g);
+  for (let x = -280; x <= 1480; x += 74) el('line', {x1:x, y1:560, x2:600 + (x-600)*1.45, y2:720}, pl);
+  el('rect', {x:0, y:550, width:1200, height:12, fill:'#d7cdb9'}, g);
+
+  // jute rug under the desk
+  el('ellipse', {cx:560, cy:668, rx:340, ry:34, fill:'#d2bb92'}, g);
+  el('ellipse', {cx:560, cy:668, rx:302, ry:27, fill:'none', stroke:'#b99f73', 'stroke-width':2}, g);
+  el('ellipse', {cx:560, cy:668, rx:260, ry:20, fill:'none', stroke:'#b99f73', 'stroke-width':2}, g);
+
+  // window on the sitter's left (viewer's right) + living view
+  el('rect', {x:830, y:80, width:320, height:330, rx:4, fill:'#f5f0e7', stroke:'#ddd3c1', 'stroke-width':2}, g);
+  const view = el('g', {'clip-path':'url(#glassA)'}, g);
+  el('rect', {x:845, y:95, width:290, height:300, fill:'url(#skyGrad)'}, view);
+  const stars = el('g', {id:'stars', opacity:0}, view);
+  for (let i = 0; i < 18; i++) el('circle', {cx:850 + r()*280, cy:100 + r()*130, r:0.8 + r()*1.3, fill:'#fffbe8'}, stars);
+  el('circle', {id:'moon', cx:1090, cy:135, r:11, fill:'#f4f0de', opacity:0}, view);
+  el('circle', {id:'sun', cx:990, cy:130, r:20, fill:'#ffe39c'}, view);
+  const clouds = el('g', {class:'clouds', fill:'#ffffff', opacity:.8}, view);
+  [[890,150],[1060,185],[1180,140]].forEach(([x,y]) => {
+    el('ellipse', {cx:x, cy:y, rx:26, ry:10}, clouds); el('ellipse', {cx:x+18, cy:y-7, rx:16, ry:9}, clouds); el('ellipse', {cx:x-16, cy:y+2, rx:14, ry:7}, clouds);
+  });
+  el('path', {d:'M845 300 Q915 262 990 288 T1135 276 V395 H845Z', fill:'#a3c391'}, view);
+  el('path', {d:'M845 338 Q935 300 1030 328 T1135 318 V395 H845Z', fill:'#73a05e'}, view);
+  [[872,318,1],[930,300,.8],[1040,322,1.1],[1104,306,.9]].forEach(([x,y,s]) => {
+    el('rect', {x:x - 2.5*s, y, width:5*s, height:26*s, fill:'#6b5136'}, view);
+    const crown = el('g', swayAttr(r, 2, 3.2), view);
+    [[0,-6,15],[-10,2,11],[10,2,12],[0,-18,11]].forEach(([dx,dy,rr],k) =>
+      el('circle', {cx:x + dx*s, cy:y + dy*s, r:rr*s, fill:['#4f7d43','#5f8f4e','#45703b','#6a9a57'][k]}, crown));
+  });
+  const bird = el('g', {class:'bird'}, view);
+  el('path', {class:'flap', d:'M0 0 q6 -6 12 0 q6 -6 12 0', fill:'none', stroke:'#2a2f33', 'stroke-width':2}, bird);
+  el('path', {class:'flap', d:'M30 12 q5 -5 10 0 q5 -5 10 0', fill:'none', stroke:'#2a2f33', 'stroke-width':1.8}, bird);
+  // frame bars, raised lower sash (window open a little), glass reflections
+  el('rect', {x:986, y:95, width:8, height:253, fill:'#f5f0e7'}, g);
+  el('rect', {x:845, y:241, width:290, height:8, fill:'#f5f0e7'}, g);
+  el('rect', {x:845, y:344, width:290, height:9, fill:'#efe8db'}, g);
+  [[860,100,900,100,860,165],[1000,100,1045,100,1000,170],[860,255,895,255,860,310],[1000,255,1040,255,1000,315]].forEach(p =>
+    el('polygon', {points:p.join(','), fill:'#ffffff', opacity:.16}, g));
+  el('rect', {x:818, y:405, width:344, height:14, rx:3, fill:'#eee6d6'}, g);
+  el('rect', {x:824, y:419, width:332, height:6, fill:'#000', opacity:.06}, g);
+  const herbs = el('g', {class:'grow', style:'--d:.15s'}, g);
+  herbPot(herbs, 870, 405, r); herbPot(herbs, 916, 405, r); herbPot(herbs, 1110, 405, r);
+  el('rect', {x:784, y:64, width:412, height:6, rx:3, fill:'#8a6a45'}, g);
+  el('circle', {cx:784, cy:67, r:6, fill:'#7a5a38'}, g); el('circle', {cx:1196, cy:67, r:6, fill:'#7a5a38'}, g);
+  curtain(g, 796, 846, 6.3); curtain(g, 1134, 1184, 7.4);
+
+  // preserved moss panel (left)
+  const moss = el('g', {class:'grow', style:'--d:.9s;--oy:50%'}, g);
+  el('rect', {x:60, y:108, width:164, height:284, rx:8, fill:'#8f6337'}, moss);
+  el('rect', {x:72, y:120, width:140, height:260, rx:3, fill:'#3e5528'}, moss);
+  const mg = el('g', {'clip-path':'url(#mossClip)'}, moss);
+  const mc = ['#4d6a30','#5f7d3a','#6f8e45','#7f9c50','#3f5a27','#88a65a'];
+  for (let i = 0; i < 360; i++) el('circle', {cx:66 + r()*152, cy:116 + r()*268, r:4 + r()*9, fill:mc[Math.floor(r()*mc.length)]}, mg);
+  for (let i = 0; i < 70; i++) el('circle', {cx:70 + r()*144, cy:118 + r()*264, r:1.4 + r()*2, fill:'#a9c47a'}, mg);
+
+  // snake plant (left corner)
+  const snake = el('g', {class:'grow', style:'--d:.75s'}, g);
+  for (let i = 0; i < 9; i++){
+    const bx = 246 + i*6 + (r()-.5)*4, h = 105 + r()*85, lean = (i-4)*5 + (r()-.5)*8, w = 7 + r()*3;
+    const lg = el('g', swayAttr(r, 1.3, 4), snake);
+    el('path', {d:`M${bx-w} 602 Q${bx - w*0.6 + lean*0.3} ${600 - h*0.55} ${bx + lean} ${600 - h} Q${bx + w*0.6 + lean*0.3} ${600 - h*0.55} ${bx + w} 602Z`, fill:i%2 ? '#3f6a3a' : '#4f7b44', stroke:'#c8c26a', 'stroke-width':1.4}, lg);
+  }
+  el('path', {d:'M232 598 H308 L300 668 H240Z', fill:'#e4ddd0'}, snake);
+  el('rect', {x:230, y:594, width:80, height:8, rx:2, fill:'#d4ccbd'}, snake);
+
+  // oak shelf canopy with books and trailing pothos
+  el('rect', {x:356, y:244, width:8, height:28, fill:'#8f6337'}, g);
+  el('rect', {x:756, y:244, width:8, height:28, fill:'#8f6337'}, g);
+  el('rect', {x:330, y:232, width:460, height:14, rx:2, fill:'#b8834a'}, g);
+  el('rect', {x:330, y:232, width:460, height:3, fill:'#d09a5d'}, g);
+  const bc = ['#7d8f69','#c9a46a','#5f7480','#d9cdb4','#9a6b4f','#4f6650','#b9b08f','#a7b59a'];
+  let bx = 404;
+  while (bx < 712){
+    const w = 12 + r()*12, h = 56 + r()*30;
+    el('rect', {x:bx, y:232 - h, width:w, height:h, rx:1.5, fill:bc[Math.floor(r()*bc.length)]}, g);
+    el('rect', {x:bx + 2, y:232 - h + 9, width:Math.max(2, w - 4), height:3, fill:'#fff', opacity:.35}, g);
+    bx += w + 1.5;
+  }
+  const pothos = el('g', {class:'grow', style:'--d:.45s;--oy:0%'}, g);
+  shelfPot(pothos, 362, 232); shelfPot(pothos, 758, 232);
+  [
+    [[356,206],[344,250],[352,300],[340,350],[348,400]],
+    [[370,208],[392,244],[384,284],[398,312]],
+    [[748,212],[690,238],[630,234],[560,242],[500,236],[440,240]],
+    [[766,206],[782,250],[776,300],[790,346],[784,392]]
+  ].forEach(pts => { const vg = el('g', Object.assign(swayAttr(r, 1.8, 4.2), {class:'sway hang'}), pothos); vine(vg, pts, 12, r, greens); });
+  potCluster(pothos, 362, 196, r, greens); potCluster(pothos, 758, 196, r, greens);
+
+  // wooden chair BEHIND the desk: I face the room, my back to the wall
+  el('rect', {x:474, y:340, width:10, height:150, fill:'#8f6337'}, g);
+  el('rect', {x:636, y:340, width:10, height:150, fill:'#8f6337'}, g);
+  el('rect', {x:486, y:350, width:148, height:86, rx:12, fill:'#dccfb4'}, g);
+  el('rect', {x:494, y:358, width:132, height:70, rx:8, fill:'none', stroke:'#c7b896', 'stroke-width':1.5, 'stroke-dasharray':'4 4'}, g);
+  el('rect', {x:468, y:334, width:184, height:12, rx:6, fill:'#9b6a39'}, g);
+  el('rect', {x:462, y:520, width:196, height:16, rx:6, fill:'#9b6a39'}, g);
+  el('rect', {x:470, y:536, width:9, height:52, fill:'#7a532c'}, g);
+  el('rect', {x:641, y:536, width:9, height:52, fill:'#7a532c'}, g);
+
+  // oak desk
+  el('rect', {x:338, y:490, width:16, height:136, fill:'#9b6a39'}, g);
+  el('rect', {x:766, y:490, width:16, height:136, fill:'#9b6a39'}, g);
+  el('rect', {x:330, y:484, width:460, height:12, fill:'#a87543'}, g);
+  el('rect', {x:318, y:466, width:484, height:20, rx:3, fill:'#b9864e'}, g);
+  el('rect', {x:318, y:481, width:484, height:6, fill:'#9b6a39'}, g);
+  [[340,520],[560,780]].forEach(([a,b]) => el('line', {x1:a, y1:473, x2:b, y2:474, stroke:'#a5733f', 'stroke-width':1.2}, g));
+
+  // desk items
+  [['#e0b84f',356,410],['#6d8f5a',363,406],['#c46a4a',369,412]].forEach(([c,x,y]) => el('line', {x1:x, y1:434, x2:x - 2, y2:y, stroke:c, 'stroke-width':3, 'stroke-linecap':'round'}, g));
+  el('rect', {x:350, y:432, width:24, height:34, rx:3, fill:'#a8733f'}, g);
+  el('ellipse', {cx:406, cy:450, rx:8, ry:5, fill:'#c9c3b8'}, g);
+  el('ellipse', {cx:419, cy:447, rx:9, ry:6, fill:'#8c877e'}, g);
+  el('ellipse', {cx:430, cy:451, rx:7, ry:4.5, fill:'#d8d2c6'}, g);
+  el('path', {d:'M392 466 Q392 452 416 452 Q440 452 440 466Z', fill:'#a06b38'}, g);
+  el('rect', {x:448, y:459, width:46, height:7, fill:'#efe8d6'}, g);
+  el('rect', {x:448, y:455, width:46, height:4, fill:'#7d8f69'}, g);
+  el('rect', {x:500, y:396, width:120, height:70, rx:6, fill:'#3a4148'}, g);
+  el('rect', {x:504, y:462, width:112, height:4, fill:'#2a3036'}, g);
+  leaf(g, 560, 440, 0, 1.3, '#8fbb5e');
+  mug(g, 642, 466, '#e9e2d4');
+  [[647,0],[655,1.1],[662,2.2]].forEach(([x,d]) => el('path', {class:'steam', d:`M${x} 436 q-5 -8 0 -16 q5 -8 0 -16`, fill:'none', stroke:'#ffffff', 'stroke-width':2.2, 'stroke-linecap':'round', style:`--del:-${d}s`, opacity:0}, g));
+  // circadian lamp on the sitter's LEFT (viewer's right)
+  el('ellipse', {cx:762, cy:464, rx:22, ry:4, fill:'#6e4c2d'}, g);
+  el('rect', {x:742, y:455, width:40, height:9, rx:3, fill:'#8f6337'}, g);
+  el('path', {d:'M762 458 L774 370 L730 340', fill:'none', stroke:'#3d3a36', 'stroke-width':5, 'stroke-linecap':'round', 'stroke-linejoin':'round'}, g);
+  el('circle', {cx:774, cy:370, r:4.5, fill:'#3d3a36'}, g);
+  el('polygon', {points:'700,326 742,320 756,352 688,358', fill:'#efe7d6', stroke:'#cdbfa6', 'stroke-width':1.5}, g);
+
+  // side table with fountain, away from the laptop
+  el('rect', {x:866, y:528, width:9, height:84, fill:'#9b6a39'}, g);
+  el('rect', {x:949, y:528, width:9, height:84, fill:'#9b6a39'}, g);
+  el('rect', {x:862, y:578, width:100, height:6, fill:'#a87543'}, g);
+  el('rect', {x:856, y:516, width:112, height:12, rx:3, fill:'#b9864e'}, g);
+  el('path', {d:'M872 516 Q872 494 912 492 Q952 494 952 516Z', fill:'#77726a'}, g);
+  el('ellipse', {cx:912, cy:494, rx:40, ry:5, fill:'#8d887f'}, g);
+  el('ellipse', {cx:912, cy:494, rx:34, ry:3.5, fill:'#a6cfdc'}, g);
+  el('ellipse', {cx:912, cy:482, rx:20, ry:9, fill:'#a19b90'}, g);
+  el('ellipse', {cx:910, cy:468, rx:14, ry:7, fill:'#8a857c'}, g);
+  el('ellipse', {cx:913, cy:457, rx:10, ry:5, fill:'#b3ada2'}, g);
+  el('ellipse', {cx:912, cy:449, rx:6, ry:4, fill:'#9b958b'}, g);
+  el('path', {class:'drip', d:'M917 451 C926 460 930 476 933 492', fill:'none', stroke:'#cfeaf3', 'stroke-width':2.4, 'stroke-linecap':'round'}, g);
+  el('path', {class:'drip', d:'M907 452 C898 462 894 478 891 492', fill:'none', stroke:'#cfeaf3', 'stroke-width':2.4, 'stroke-linecap':'round'}, g);
+
+  // leafy floor plant in a woven basket (right corner)
+  const fp = el('g', {class:'grow', style:'--d:0s'}, g);
+  for (let i = 0; i < 9; i++){
+    const a = -80 + i*20 + (r()-.5)*8, L = 80 + r()*50, rad = a*Math.PI/180;
+    const cx = 1140 + Math.sin(rad)*L*0.72, cy = 600 - Math.cos(rad)*L*0.72;
+    const lg = el('g', swayAttr(r, 1.8, 4), fp);
+    el('line', {x1:1140, y1:600, x2:cx, y2:cy, stroke:'#56763a', 'stroke-width':2.2}, lg);
+    el('ellipse', {cx, cy, rx:L*0.2, ry:L*0.36, fill:greens[i%3], transform:`rotate(${a} ${cx} ${cy})`}, lg);
+    el('line', {x1:cx - Math.sin(rad)*L*0.3, y1:cy + Math.cos(rad)*L*0.3, x2:cx + Math.sin(rad)*L*0.32, y2:cy - Math.cos(rad)*L*0.32, stroke:'#9cc27a', 'stroke-width':1.2}, lg);
+  }
+  el('path', {d:'M1100 598 H1180 L1174 668 H1106Z', fill:'#c9a571'}, fp);
+  for (let y = 608; y < 666; y += 9) el('line', {x1:1102, y1:y, x2:1178, y2:y, stroke:'#ad8a56', 'stroke-width':2}, fp);
+
+  // dappled light from the trees (non-rhythmic) + dust motes + breeze
+  const dap = el('g', {id:'dapples', filter:'url(#soft)', style:'mix-blend-mode:screen'}, g);
+  for (let i = 0; i < 18; i++) el('ellipse', {class:'dap', cx:560 + r()*420, cy:598 + r()*96, rx:10 + r()*16, ry:4 + r()*6, fill:'#fff3c4', style:`--dur:${(3 + r()*4).toFixed(2)}s;--del:-${(r()*5).toFixed(2)}s`}, dap);
+  for (let i = 0; i < 12; i++) el('ellipse', {class:'dap', cx:850 + r()*270, cy:432 + r()*100, rx:7 + r()*11, ry:7 + r()*10, fill:'#fff3c4', style:`--dur:${(3 + r()*4).toFixed(2)}s;--del:-${(r()*5).toFixed(2)}s`}, dap);
+  const motes = el('g', {id:'motes'}, g);
+  for (let i = 0; i < 16; i++) el('circle', {class:'mote', cx:620 + r()*420, cy:460 + r()*230, r:1.4 + r()*1.2, fill:'#fffbe6', style:`--dur:${(7 + r()*6).toFixed(2)}s;--del:-${(r()*10).toFixed(2)}s`}, motes);
+  const air = el('g', {fill:'none', stroke:'#ffffff', 'stroke-width':2.8, 'stroke-linecap':'round'}, g);
+  ['M1125 372 C1020 356 930 392 820 380 S640 360 520 384','M1110 386 C990 380 900 410 780 400 S600 386 470 404','M1120 360 C1030 340 960 360 880 352 S760 330 660 350','M1100 378 C1000 372 940 330 860 330 S740 300 640 316']
+    .forEach((d,i) => el('path', {class:'air', d, style:`--del:-${i*2.1}s`}, air));
+
+  // lighting layers driven by the time of day
+  el('rect', {id:'tint', x:0, y:0, width:1200, height:720, fill:'#ffffff', opacity:0, style:'mix-blend-mode:multiply'}, g);
+  el('polygon', {id:'beam', points:'845,395 1135,395 1000,720 430,720', fill:'url(#beamGrad)', opacity:.6, style:'mix-blend-mode:screen'}, g);
+  el('circle', {id:'lampGlow', cx:722, cy:360, r:270, fill:'url(#lampGlowGrad)', opacity:.25, style:'mix-blend-mode:screen'}, g);
+  el('polygon', {id:'lampCone', points:'690,356 756,350 800,466 590,466', fill:'url(#coneGrad)', opacity:.2, style:'mix-blend-mode:screen'}, g);
+  el('ellipse', {id:'lampPool', cx:690, cy:467, rx:112, ry:6, fill:'#fff7ef', opacity:.25}, g);
+}
+
+/* ================= BEFORE: my room as it was ================= */
+function buildBefore(g){
+  const r = rng(3);
+  el('rect', {x:0, y:0, width:1200, height:560, fill:'url(#wallB)'}, g);
+  el('ellipse', {cx:660, cy:300, rx:60, ry:34, fill:'#a9adae', opacity:.35}, g);
+  el('rect', {x:0, y:560, width:1200, height:160, fill:'#a1a6a9'}, g);
+  const tl = el('g', {stroke:'#8d9295', 'stroke-width':1.5}, g);
+  for (let x = -280; x <= 1480; x += 110) el('line', {x1:x, y1:560, x2:600 + (x-600)*1.45, y2:720}, tl);
+  [590,624,668].forEach(y => el('line', {x1:0, y1:y, x2:1200, y2:y}, tl));
+  el('rect', {x:0, y:550, width:1200, height:12, fill:'#b4b8bb'}, g);
+
+  // window: blinds shut, heavy curtain, boxes in front, dead plant
+  el('rect', {x:830, y:80, width:320, height:330, rx:4, fill:'#dfe2e4', stroke:'#c3c7ca', 'stroke-width':2}, g);
+  el('rect', {x:845, y:95, width:290, height:300, fill:'#c3c8cc'}, g);
+  for (let y = 95; y < 392; y += 11) el('rect', {x:845, y, width:290, height:9.5, fill:'#d4d8db', stroke:'#b0b6bb', 'stroke-width':.6}, g);
+  el('rect', {x:840, y:88, width:300, height:9, fill:'#c9cdd0'}, g);
+  el('line', {x1:1120, y1:97, x2:1120, y2:330, stroke:'#9aa0a4', 'stroke-width':1.5}, g);
+  el('rect', {x:818, y:405, width:344, height:14, rx:3, fill:'#d8dbdd'}, g);
+  el('rect', {x:784, y:60, width:412, height:6, fill:'#4a4a4f'}, g);
+  el('path', {d:'M796 66 H930 V456 Q886 468 862 456 Q830 468 796 456Z', fill:'#5f5c66'}, g);
+  [820,850,880,906].forEach(x => el('line', {x1:x, y1:70, x2:x + 2, y2:452, stroke:'#55525b', 'stroke-width':3}, g));
+  el('path', {d:'M1088 383 H1114 L1110 405 H1092Z', fill:'#8f7b62'}, g);
+  [['M1100 384 q-14 4 -18 22','#8a6f45'],['M1102 384 q12 2 16 20','#7b6440'],['M1101 383 q-2 -14 -10 -18','#93784c']].forEach(([d,c]) => el('path', {d, fill:'none', stroke:c, 'stroke-width':3, 'stroke-linecap':'round'}, g));
+  el('rect', {x:950, y:500, width:160, height:104, fill:'#c9a77a', stroke:'#a88655', 'stroke-width':2}, g);
+  el('rect', {x:1022, y:500, width:16, height:104, fill:'#d9c49c', opacity:.8}, g);
+  el('rect', {x:972, y:428, width:122, height:74, fill:'#bf9c6c', stroke:'#a88655', 'stroke-width':2}, g);
+  el('rect', {x:1026, y:428, width:14, height:74, fill:'#d9c49c', opacity:.8}, g);
+
+  // harsh overhead tube
+  const tube = el('g', {class:'flicker'}, g);
+  el('polygon', {points:'492,20 708,20 1060,560 140,560', fill:'url(#fluoroCone)'}, tube);
+  el('rect', {x:490, y:16, width:220, height:6, rx:3, fill:'#f7fcff'}, tube);
+  el('rect', {x:478, y:0, width:244, height:18, fill:'#dde3e8'}, g);
+
+  // shelf with plastic bins
+  el('rect', {x:76, y:240, width:5, height:30, fill:'#9ca2a7'}, g);
+  el('rect', {x:420, y:240, width:5, height:30, fill:'#9ca2a7'}, g);
+  el('rect', {x:50, y:232, width:400, height:8, fill:'#cfd3d6'}, g);
+  el('rect', {x:62, y:178, width:72, height:54, rx:4, fill:'#2f7fd1'}, g);
+  el('rect', {x:82, y:186, width:32, height:7, rx:3, fill:'#1d5fa6'}, g);
+  el('rect', {x:142, y:190, width:60, height:42, rx:4, fill:'#d9473f'}, g);
+  [[212,'#7a6cc4',-14],[230,'#e0a13a',-9],[248,'#3c9f8a',0],[266,'#e86a8a',9]].forEach(([x,c,a]) =>
+    el('rect', {x, y:166, width:16, height:66, fill:c, transform:`rotate(${a} ${x+8} 232)`}, g));
+  for (let i = 0; i < 6; i++) el('rect', {x:298 + r()*6, y:226 - i*5, width:52, height:5, fill:'#fafaf8', stroke:'#c4c8cb', 'stroke-width':.8}, g);
+  el('rect', {x:360, y:186, width:82, height:46, rx:4, fill:'#e7b52c'}, g);
+
+  // sticky-note chaos
+  const sc = ['#f4e04d','#f59ac0','#f6a04d','#a7e05a','#7fd3f0'];
+  const note = (x, y, s, i) => {
+    const n = el('g', {transform:`rotate(${(r()-.5)*26} ${x + s/2} ${y + s/2})`}, g);
+    el('rect', {x, y, width:s, height:s, fill:sc[i%5], stroke:'rgba(0,0,0,.1)'}, n);
+    el('line', {x1:x+4, y1:y+9, x2:x+s-6, y2:y+9, stroke:'rgba(0,0,0,.3)', 'stroke-width':1.2}, n);
+    el('line', {x1:x+4, y1:y+15, x2:x+s-10, y2:y+15, stroke:'rgba(0,0,0,.3)', 'stroke-width':1.2}, n);
+  };
+  for (let i = 0; i < 18; i++) note(52 + r()*400, 60 + r()*100, 24 + r()*10, i);
+  for (let i = 0; i < 6; i++) note(52 + r()*110, 262 + r()*70, 24 + r()*8, i + 2);
+  for (let i = 0; i < 5; i++) note(355 + r()*90, 262 + r()*60, 24 + r()*8, i + 1);
+
+  // laminate desk pushed into the corner, facing the wall
+  el('rect', {x:60, y:455, width:10, height:155, fill:'#80878d'}, g);
+  el('rect', {x:450, y:455, width:10, height:155, fill:'#80878d'}, g);
+  el('rect', {x:70, y:520, width:380, height:6, fill:'#80878d'}, g);
+  el('rect', {x:40, y:438, width:430, height:16, rx:2, fill:'#eceeef'}, g);
+  el('rect', {x:40, y:450, width:430, height:5, fill:'#c3c7ca'}, g);
+  for (let i = 0; i < 8; i++) el('rect', {x:50 + r()*10, y:433 - i*5, width:84, height:5, fill:i%3 ? '#fbfbf9' : '#f1efe6', stroke:'#c4c8cb', 'stroke-width':.8}, g);
+  el('circle', {cx:90, cy:386, r:9, fill:'#f6f6f3', stroke:'#c8ccd0'}, g);
+  mug(g, 142, 438, '#e05d4f');
+  // laptop screen faces me (and the viewer), notifications popping
+  el('rect', {x:175, y:344, width:160, height:94, rx:5, fill:'#2a3036'}, g);
+  el('rect', {x:183, y:352, width:144, height:78, rx:2, fill:'#f5f8fb'}, g);
+  el('rect', {x:187, y:356, width:82, height:46, fill:'#ffffff', stroke:'#9db2c8'}, g);
+  el('rect', {x:187, y:356, width:82, height:8, fill:'#7b5cd6'}, g);
+  el('rect', {x:231, y:372, width:88, height:50, fill:'#eef3f8', stroke:'#9db2c8'}, g);
+  el('rect', {x:231, y:372, width:88, height:8, fill:'#3a7bd5'}, g);
+  [[0,250,358],[2.5,262,384],[5,240,406]].forEach(([d,x,y]) => {
+    const p = el('g', {class:'pop', style:`--del:${d}s`}, g);
+    el('rect', {x, y, width:66, height:18, rx:4, fill:'#ffffff', stroke:'#c9ced4'}, p);
+    el('circle', {cx:x + 9, cy:y + 9, r:5, fill:'#e5484d'}, p);
+    el('rect', {x:x + 18, y:y + 6, width:40, height:3, fill:'#9aa3ad'}, p);
+    el('rect', {x:x + 18, y:y + 11, width:28, height:3, fill:'#c2c8cf'}, p);
+  });
+  el('polygon', {points:'163,438 347,438 355,445 155,445', fill:'#a9afb3'}, g);
+  mug(g, 352, 438, '#ffffff');
+  el('rect', {x:384, y:406, width:16, height:32, rx:2, fill:'#26c0d3'}, g);
+  el('rect', {x:384, y:414, width:16, height:6, fill:'#11323a'}, g);
+  el('rect', {x:403, y:410, width:15, height:28, rx:2, fill:'#d9473f'}, g);
+  const phone = el('g', {class:'buzz'}, g);
+  el('circle', {cx:440, cy:422, r:22, fill:'#7fb3ff', opacity:.28}, phone);
+  el('rect', {x:430, y:404, width:20, height:34, rx:4, fill:'#15171a'}, phone);
+  el('rect', {x:433, y:408, width:14, height:26, rx:2, fill:'#8fc0ff'}, phone);
+  el('path', {d:'M120 452 C150 520 90 548 128 596 S200 642 162 700', fill:'none', stroke:'#202326', 'stroke-width':3}, g);
+  el('path', {d:'M420 452 C440 520 390 560 430 610 C460 650 380 664 414 702', fill:'none', stroke:'#2b2f33', 'stroke-width':3}, g);
+
+  // office chair, my back to the room, hoodie dumped on it
+  el('rect', {x:190, y:450, width:130, height:106, rx:22, fill:'#464b51'}, g);
+  for (let y = 466; y < 548; y += 10) el('line', {x1:202, y1:y, x2:308, y2:y, stroke:'#565b62', 'stroke-width':1.5}, g);
+  el('path', {d:'M194 454 Q255 432 316 454 L320 504 Q302 494 292 522 L222 522 Q210 494 190 504Z', fill:'#7a2f3a'}, g);
+  el('rect', {x:174, y:552, width:162, height:22, rx:10, fill:'#383c41'}, g);
+  el('rect', {x:249, y:574, width:12, height:58, fill:'#2b2e32'}, g);
+  [[185,672],[325,672],[215,692],[295,692]].forEach(([x,y]) => {
+    el('line', {x1:255, y1:634, x2:x, y2:y, stroke:'#2b2e32', 'stroke-width':7, 'stroke-linecap':'round'}, g);
+    el('circle', {cx:x, cy:y + 4, r:6, fill:'#1f2124'}, g);
+  });
+
+  // floor: laundry, backpack, pizza box, bin, paper
+  [[590,628,48,20,'#4a6fa5'],[640,618,40,18,'#d9d4c6'],[612,606,30,14,'#8a3b3b'],[662,638,36,14,'#2f2f35'],[572,614,24,10,'#b7a26a'],[628,646,30,10,'#6b8f6a']]
+    .forEach(([cx,cy,rx,ry,c]) => el('ellipse', {cx, cy, rx, ry, fill:c}, g));
+  el('rect', {x:726, y:566, width:68, height:76, rx:16, fill:'#2f4f6f'}, g);
+  el('rect', {x:740, y:600, width:40, height:28, rx:6, fill:'#27445f'}, g);
+  el('path', {d:'M740 568 q20 -26 40 0', fill:'none', stroke:'#22384f', 'stroke-width':5}, g);
+  el('polygon', {points:'820,652 940,652 958,670 838,670', fill:'#d8b27a'}, g);
+  el('polygon', {points:'820,652 940,652 940,646 820,646', fill:'#c49a5f'}, g);
+  el('rect', {x:486, y:596, width:56, height:70, rx:4, fill:'#6b7076'}, g);
+  [[498,590],[514,584],[530,592],[506,576]].forEach(([x,y]) => el('circle', {cx:x, cy:y, r:9, fill:'#f4f4f2', stroke:'#c8ccd0'}, g));
+  [[1010,690],[700,700],[470,684],[1150,676],[880,700]].forEach(([x,y]) => el('circle', {cx:x, cy:y, r:9, fill:'#f4f4f2', stroke:'#c8ccd0'}, g));
+  el('rect', {x:980, y:640, width:14, height:28, rx:2, fill:'#26c0d3', transform:'rotate(70 987 654)'}, g);
+
+  el('rect', {x:0, y:0, width:1200, height:720, fill:'#b4c9e3', opacity:.24, style:'mix-blend-mode:multiply'}, g);
+}
+
+/* ================= content ================= */
+const MOVES = [
+  {id:'desk', pin:[560,300,'Back to the wall, facing the room'], name:'Desk turned to face the room', tag:'Prospect & refuge · Appleton', hx:560, hy:338, f:[560,400,640],
+   cap:'My back is to the wall now, and I face the room.',
+   change:'Pulled the desk out of the corner and turned it around.',
+   why:'Sheltered behind, open view ahead: the brain stops scanning for threats and settles into the task.'},
+  {id:'daylight', pin:[990,170,'Daylight + a view of trees'], name:'Daylight from my left', tag:'Attention Restoration · Kaplan', hx:1065, hy:170, f:[990,250,500],
+   cap:'Blinds open, desk beside the window. Daylight falls from my left.',
+   change:'Opened the blinds, cleared the boxes, put the desk beside the window.',
+   why:'Looking at trees rests tired attention. Light from the left means no glare and no hand shadow when I write.'},
+  {id:'breeze', pin:[990,372,'Window open a little'], name:'Fresh air and a gentle breeze', tag:'Thermal & airflow variability', hx:1062, hy:372, f:[930,370,470],
+   cap:'Window open a little. Moving air keeps my head clear.',
+   change:'Window opened slightly; light linen curtains move with the air.',
+   why:'Stale, stuffy air dulls thinking. Gentle changes in air and temperature keep you alert.'},
+  {id:'plants', pin:[1110,470,'Low-care plants'], name:'Living plants', tag:'Stress recovery · Ulrich', hx:1140, hy:505, f:[1010,500,560],
+   cap:'Snake plant, pothos, a floor plant and herbs on the sill.',
+   change:'Added hard-to-kill plants: snake plant, pothos, a leafy floor plant, herbs.',
+   why:'Seeing greenery helps the body recover from stress faster.'},
+  {id:'dapple', pin:[800,645,'Moving patches of light'], name:'Moving leaves, dappled light', tag:'Non-rhythmic sensory stimuli', hx:760, hy:650, f:[800,590,560],
+   cap:'Swaying leaves and moving light give my eyes tiny breaks.',
+   change:'Leaves outside cast moving light; plants sway in the breeze.',
+   why:'Soft, unpredictable movement catches the eye for a moment: a micro-break that doesn’t pull you away.'},
+  {id:'moss', pin:[142,250,'Preserved moss'], name:'Moss wall panel', tag:'Biophilia · Wilson + fractals', hx:142, hy:250, f:[200,350,520],
+   cap:'Sticky-note chaos replaced with a calm moss panel.',
+   change:'Swapped the sticky-note wall for a preserved moss panel (no watering).',
+   why:'Nature’s repeating fractal textures are easy for the eye to process, so they calm instead of demanding attention.'},
+  {id:'wood', pin:[560,205,'Oak shelf, no plastic'], name:'Wood, not plastic. Less clutter.', tag:'Natural materials + cognitive load', hx:560, hy:200, f:[560,320,580],
+   cap:'Wood instead of plastic, and only today’s work on the desk.',
+   change:'Oak shelf and pen cup, cables hidden, desk cleared.',
+   why:'Natural materials feel warmer, and fewer objects means fewer things competing for attention.'},
+  {id:'water', pin:[912,425,'Fountain on its own table'], name:'A small water fountain', tag:'Presence of water', hx:912, hy:440, f:[912,500,360],
+   cap:'On its own side table, well away from the laptop.',
+   change:'Small fountain on a side table, away from electronics.',
+   why:'Steady water sound masks chatter and is one of the most restful natural sounds.'},
+  {id:'textures', pin:[416,422,'River stones'], name:'Stones, jute and linen', tag:'Touch & texture', hx:416, hy:436, f:[440,520,480],
+   cap:'River stones, a jute rug and linen: calm things to touch.',
+   change:'River stones on the desk, jute rug, linen curtains and cushion.',
+   why:'Something calm to hold during a break, instead of reaching for my phone.'},
+  {id:'lamp', name:'Light that follows the day', tag:'Circadian lighting', hx:722, hy:300, f:[760,330,900],
+   cap:'Cool and bright by day. Warm and dim at night.',
+   change:'Tunable lamp on my left side.',
+   why:'Blue-rich light boosts alertness by day; warm, dim light at night protects sleep, when learning is stored.'}
+];
+const BEFORE_CALLOUTS = [[600,70,'Harsh tube light'],[990,220,'Blinds shut, boxes in the way'],[255,330,'Notifications all day'],[255,505,'Facing a wall, back to the room'],[650,585,'Clutter everywhere']];
+const GOOD_CALLOUTS = [[560,320,'Moved the desk'],[990,170,'Opened the blinds'],[1085,470,'A few plants'],[560,200,'Wood, not plastic'],[560,650,'Cleared the floor']];
+const STEPS = [
+  {key:'intro', tag:'Before', title:'My study corner', body:'This is my room, redrawn as an animation.', mult:1.4, scene:'before'},
+  {key:'problems', tag:'Before', title:'What was wrong', body:'Dark, cluttered, noisy, and I sat facing a wall.', mult:1.5, scene:'before'},
+  {key:'reveal', tag:'The redesign', title:'Bringing nature in', body:'Light, air, plants, natural materials, water and sound.', mult:1.4, scene:'after'},
+  ...MOVES.map(m => ({key:m.id, tag:m.tag, title:m.name, body:m.cap, mult:m.id === 'lamp' ? 2 : 1, scene:m.id === 'breeze' ? 'breeze' : 'after', move:m})),
+  {key:'test', tag:'Evidence', title:'Does it help? A 1-minute typing test', body:'Same person, old setup vs new setup.', mult:2, scene:'after'},
+  {key:'small', tag:'Cost', title:'Small changes, big impact', body:'Mostly moving furniture and opening blinds. Nothing expensive.', mult:1.3, scene:'after'},
+  {key:'end', tag:'Key learning', title:'More than adding plants', body:'Connecting with nature supports well-being and focus.', mult:1.3, scene:'after'}
+];
+
+/* ================= state ================= */
+const svg = $('scene');
+buildAfter($('after'));
+buildBefore($('before'));
+const state = {p:50, t:12.5};
+const cam = {x:0, y:0, w:1200};
+const FULL = {x:0, y:0, w:1200};
+const tour = {on:false, i:0, paused:false, elapsed:0, last:0, raf:0, scene:null};
+const T = {mode:null, running:false, started:false, dur:60, typed:'', target:'', keys:0, errs:0, t0:0, raf:0, dTimer:0, fTimer:0};
+const wrap = $('sceneWrap'), divider = $('divider'), handle = $('handle'), clipRect = $('beforeClipRect'), fx = $('fx');
+const hs = {};
+let callouts = [];
+
+/* ================= tweens + camera ================= */
+const tweens = {};
+function tween(key, dur, fn, done){
+  cancelAnimationFrame(tweens[key]);
+  if (RM || dur <= 0){ fn(1); if (done) done(); return; }
+  const t0 = performance.now();
+  const st = now => {
+    const k = Math.min(1, (now - t0) / dur);
+    fn(k);
+    if (k < 1) tweens[key] = requestAnimationFrame(st); else if (done) done();
+  };
+  tweens[key] = requestAnimationFrame(st);
+}
+const stopTween = key => cancelAnimationFrame(tweens[key]);
+function goP(to, dur = 700, done){ const from = state.p; tween('p', dur, k => setP(from + (to - from) * ease(k)), done); }
+function goT(to, dur = 700){ const from = state.t; tween('t', dur, k => setTime(from + (to - from) * ease(k))); }
+
+function camFor(cx, cy, w){ w = clamp(w, 240, 1200); const h = w * .6; return {x:clamp(cx - w/2, 0, 1200 - w), y:clamp(cy - h/2, 0, 720 - h), w}; }
+function applyCam(){ svg.setAttribute('viewBox', `${cam.x.toFixed(2)} ${cam.y.toFixed(2)} ${cam.w.toFixed(2)} ${(cam.w*.6).toFixed(2)}`); layout(); }
+function camTo(t, dur = 1500, done){
+  const f = {x:cam.x, y:cam.y, w:cam.w};
+  const fc = [f.x + f.w/2, f.y + f.w*.3], tc = [t.x + t.w/2, t.y + t.w*.3];
+  const bump = Math.min(320, Math.hypot(tc[0]-fc[0], tc[1]-fc[1]) * .45);
+  tween('cam', dur, k => {
+    const e = ease(k);
+    const c = camFor(fc[0] + (tc[0]-fc[0])*e, fc[1] + (tc[1]-fc[1])*e, f.w + (t.w - f.w)*e + bump*Math.sin(Math.PI*k));
+    cam.x = c.x; cam.y = c.y; cam.w = c.w; applyCam();
+  }, done);
+}
+function drift(dur){
+  if (cam.w > 1190 || dur < 300) return;
+  const w0 = cam.w, cx = cam.x + w0/2, cy = cam.y + w0*.3;
+  tween('cam', dur, k => { const c = camFor(cx, cy, w0 * (1 - .06*k)); cam.x = c.x; cam.y = c.y; cam.w = c.w; applyCam(); });
+}
+const toPct = (x, y) => [(x - cam.x) / cam.w * 100, (y - cam.y) / (cam.w*.6) * 100];
+
+function layout(){
+  const zoomed = cam.w < 1190;
+  MOVES.forEach(m => {
+    const b = hs[m.id]; if (!b) return;
+    const [px, py] = toPct(m.hx, m.hy);
+    b.style.left = px + '%'; b.style.top = py + '%';
+    b.hidden = tour.on || m.hx < state.p*12 + 8 || px < 2 || px > 98 || py < 3 || py > 97;
+  });
+  callouts.forEach(c => { const [px, py] = toPct(c.x, c.y); c.el.style.left = px + '%'; c.el.style.top = py + '%'; });
+  const dx = toPct(state.p*12, 0)[0];
+  divider.style.left = dx + '%';
+  divider.hidden = state.p <= .3 || state.p >= 99.7 || dx < 0 || dx > 100;
+  $('tagBefore').style.opacity = (!zoomed && state.p > 9) ? 1 : 0;
+  $('tagAfter').style.opacity = (!zoomed && state.p < 91) ? 1 : 0;
+  $('fullBtn').hidden = !zoomed || tour.on;
+}
+
+/* ================= divider ================= */
+MOVES.forEach((m, i) => {
+  const b = document.createElement('button');
+  b.className = 'hs'; b.textContent = i + 1;
+  b.setAttribute('aria-label', `${i+1}. ${m.name}`);
+  b.addEventListener('click', () => select(m.id));
+  $('hotspots').appendChild(b); hs[m.id] = b;
+});
+function setP(p){
+  p = clamp(p, 0, 100); state.p = p;
+  clipRect.setAttribute('width', p * 12);
+  handle.setAttribute('aria-valuenow', Math.round(p));
+  document.querySelectorAll('.seg button').forEach(b => b.classList.toggle('on', Math.abs(+b.dataset.p - p) < 1));
+  layout();
+  if (!tour.on) refreshAmbience();
+}
+let dragging = false;
+const pFromEvent = e => { const rc = wrap.getBoundingClientRect(); return (cam.x + (e.clientX - rc.left) / rc.width * cam.w) / 12; };
+divider.addEventListener('pointerdown', e => { dragging = true; stopTween('p'); divider.setPointerCapture(e.pointerId); setP(pFromEvent(e)); e.preventDefault(); });
+divider.addEventListener('pointermove', e => { if (dragging) setP(pFromEvent(e)); });
+divider.addEventListener('pointerup', () => { dragging = false; });
+divider.addEventListener('pointercancel', () => { dragging = false; });
+handle.addEventListener('keydown', e => {
+  const k = {ArrowLeft:-5, ArrowRight:5, Home:-100, End:100}[e.key];
+  if (k !== undefined){ e.preventDefault(); e.stopPropagation(); setP(state.p + k); }
+});
+document.querySelectorAll('.seg button').forEach(b => b.addEventListener('click', () => { camTo(FULL, 1000); goP(+b.dataset.p); clearActive(); }));
+$('fullBtn').addEventListener('click', () => { camTo(FULL, 1200); clearActive(); });
+
+/* ================= lighting through the day ================= */
+const KEYS = [
+  {t:6,   top:'#6a7fb4', bot:'#f4b98c', tint:'#ffc79a', ta:.28, sx:870,  sy:385, beam:.25, bc:'#ffd7a8', K:4000, bri:.6,  dark:.35, label:'Sunrise'},
+  {t:8,   top:'#86bdea', bot:'#f3e6cc', tint:'#fff1d8', ta:.06, sx:905,  sy:250, beam:.55, bc:'#fff2c9', K:5000, bri:.75, dark:0,   label:'Morning focus'},
+  {t:12.5,top:'#4fa2e6', bot:'#cde8f9', tint:'#ffffff', ta:0,   sx:990,  sy:130, beam:.65, bc:'#fff6dc', K:5500, bri:.8,  dark:0,   label:'Midday focus'},
+  {t:16,  top:'#63a3dc', bot:'#ece0c0', tint:'#ffeccc', ta:.08, sx:1075, sy:215, beam:.6,  bc:'#ffe9bf', K:5000, bri:.75, dark:0,   label:'Afternoon'},
+  {t:18.5,top:'#5465a3', bot:'#f59a52', tint:'#ff9a52', ta:.34, sx:1115, sy:360, beam:.45, bc:'#ffb067', K:3500, bri:.8,  dark:.25, label:'Golden hour'},
+  {t:20,  top:'#20264f', bot:'#6c4f80', tint:'#433872', ta:.52, sx:1130, sy:440, beam:0,   bc:'#ffb067', K:3000, bri:.75, dark:.7,  label:'Wind-down'},
+  {t:23,  top:'#080c22', bot:'#19214a', tint:'#10153a', ta:.66, sx:1130, sy:460, beam:0,   bc:'#ffb067', K:2700, bri:.5,  dark:1,   label:'Lights low'}
+];
+const KCOL = [[2700,'#ffb469'],[3000,'#ffc283'],[3500,'#ffd3a3'],[4000,'#ffe1bf'],[5000,'#fff1e3'],[5500,'#fff7ef'],[6500,'#f4f7ff']];
+const h2r = h => [1,3,5].map(i => parseInt(h.slice(i, i+2), 16));
+const r2h = a => '#' + a.map(v => Math.round(v).toString(16).padStart(2, '0')).join('');
+const lerpC = (a, b, f) => { const A = h2r(a), B = h2r(b); return r2h(A.map((v,i) => v + (B[i]-v)*f)); };
+function kColor(K){
+  for (let i = 0; i < KCOL.length - 1; i++) if (K <= KCOL[i+1][0]) return lerpC(KCOL[i][1], KCOL[i+1][1], clamp((K - KCOL[i][0]) / (KCOL[i+1][0] - KCOL[i][0]), 0, 1));
+  return KCOL[KCOL.length-1][1];
+}
+function fmtTime(t){
+  let h = Math.floor(t), m = Math.round((t - h) * 60 / 15) * 15;
+  if (m === 60){ h++; m = 0; }
+  return `${((h + 11) % 12) + 1}:${String(m).padStart(2, '0')} ${h >= 12 && h < 24 ? 'PM' : 'AM'}`;
+}
+const attr = (id, k, v) => $(id).setAttribute(k, v);
+function setTime(t){
+  t = clamp(t, 6, 23); state.t = t;
+  let i = 0; while (i < KEYS.length - 2 && t > KEYS[i+1].t) i++;
+  const a = KEYS[i], b = KEYS[i+1], f = clamp((t - a.t) / (b.t - a.t), 0, 1);
+  const L = k => a[k] + (b[k] - a[k]) * f;
+  attr('skyTop', 'stop-color', lerpC(a.top, b.top, f));
+  attr('skyBot', 'stop-color', lerpC(a.bot, b.bot, f));
+  attr('tint', 'fill', lerpC(a.tint, b.tint, f)); attr('tint', 'opacity', L('ta'));
+  attr('sun', 'cx', L('sx')); attr('sun', 'cy', L('sy')); attr('sun', 'opacity', clamp((19.8 - t) / .8, 0, 1));
+  const night = clamp((t - 19.6) / 1.4, 0, 1);
+  attr('moon', 'opacity', night); attr('stars', 'opacity', night);
+  const bc = lerpC(a.bc, b.bc, f);
+  attr('beamS0', 'stop-color', bc); attr('beamS1', 'stop-color', bc);
+  attr('beam', 'opacity', L('beam'));
+  attr('dapples', 'opacity', clamp(L('beam') * 1.5, 0, 1));
+  attr('motes', 'opacity', clamp(L('beam') * 1.5, 0, 1));
+  const K = Math.round(L('K') / 100) * 100, bri = L('bri'), dark = L('dark'), kc = kColor(K);
+  ['glowIn','glowOut','coneTop','coneBot'].forEach(id => attr(id, 'stop-color', kc));
+  attr('lampGlow', 'opacity', bri * (.2 + .8 * dark));
+  attr('lampCone', 'opacity', bri * (.15 + .85 * dark));
+  attr('lampPool', 'fill', kc); attr('lampPool', 'opacity', bri * (.2 + .75 * dark));
+  const label = (f < .5 ? a : b).label;
+  $('lampOut').textContent = `${fmtTime(t)} · Lamp ${K} K, ${Math.round(bri * 100)}%`;
+  $('timeOut').textContent = `· ${label}`;
+  $('swatch').style.background = kc;
+  $('clockTime').textContent = fmtTime(t);
+  $('clockK').textContent = `${K} K ${K >= 4500 ? 'cool & bright' : 'warm & dim'}`;
+  $('clockLabel').textContent = label;
+  $('clockSw').style.background = kc; $('clockSw').style.color = kc;
+  const tr = $('timeRange'); if (Math.abs(+tr.value - t) > .01) tr.value = t;
+  if (tour.on && STEPS[tour.i].key === 'lamp'){ tour.scene = t >= 20 ? 'night' : 'after'; refreshAmbience(); }
+  else if (!tour.on) refreshAmbience();
+}
+let clockTimer = 0;
+function flashClock(){
+  if (tour.on) return;
+  $('clock').classList.add('on'); clearTimeout(clockTimer);
+  clockTimer = setTimeout(() => $('clock').classList.remove('on'), 2600);
+}
+$('timeRange').addEventListener('input', e => { stopTween('t'); if (state.p > 50) goP(0); setTime(+e.target.value); flashClock(); });
+document.querySelectorAll('.presets button').forEach(b => b.addEventListener('click', () => { if (state.p > 50) goP(0); goT(+b.dataset.t, 1100); flashClock(); }));
+
+/* ================= panel ================= */
+const panel = $('panel');
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function clearActive(){ Object.values(hs).forEach(b => b.classList.remove('active')); }
+function showOverview(){
+  clearActive();
+  panel.innerHTML = `
+    <h2>10 changes</h2>
+    <p class="sub">Tap one to zoom in.</p>
+    <ol class="moves">${MOVES.map((m,i) => `
+      <li><button data-id="${m.id}"><span class="num">${i+1}</span><span><b>${esc(m.name)}</b><small>${esc(m.tag)}</small></span></button></li>`).join('')}
+    </ol>`;
+  panel.querySelectorAll('.moves button').forEach(b => b.addEventListener('click', () => select(b.dataset.id)));
+}
+function select(id, opts = {}){
+  const i = MOVES.findIndex(m => m.id === id), m = MOVES[i];
+  Object.entries(hs).forEach(([k,b]) => b.classList.toggle('active', k === id));
+  if (!opts.noZoom && !tour.on){
+    if (state.p > .5) goP(0, 800);
+    camTo(camFor(m.f[0], m.f[1], m.f[2]), 1400);
+    if (m.id === 'lamp') flashClock();
+  }
+  panel.innerHTML = `
+    <div class="d-head"><span class="num">${i+1}</span><h2>${esc(m.name)}</h2></div>
+    <span class="ptag">${esc(m.tag)}</span>
+    <div class="kv">
+      <p><b>What changed</b>${esc(m.change)}</p>
+      <p><b>Why it helps</b>${esc(m.why)}</p>
+    </div>
+    <div class="d-nav">
+      <button class="btn sm" data-go="${(i + MOVES.length - 1) % MOVES.length}">Previous</button>
+      <button class="btn sm" data-go="${(i + 1) % MOVES.length}">Next</button>
+      <button class="btn sm ghost" data-all>All changes</button>
+    </div>`;
+  panel.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => select(MOVES[+b.dataset.go].id)));
+  panel.querySelector('[data-all]').addEventListener('click', () => { showOverview(); if (!tour.on) camTo(FULL, 1200); });
+}
+
+/* ================= sound (all generated in the browser) ================= */
+const Sound = (() => {
+  let ctx = null, master = null, enabled = false, scene = 'silent', whiteBuf = null;
+  const bus = {}, R = Math.random;
+  const LV = {
+    silent:{}, before:{hum:.6, chatter:.5, pings:1}, beforeTest:{hum:.6, chatter:.6},
+    after:{stream:.5, birds:1, wind:.18}, breeze:{stream:.3, birds:.8, wind:.8}, night:{stream:.28, crickets:1, wind:.1}
+  };
+  function noise(kind){
+    const len = ctx.sampleRate * 3, b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
+    let last = 0;
+    for (let i = 0; i < len; i++){ const w = R()*2 - 1; if (kind === 'brown'){ last = (last + .02*w) / 1.02; d[i] = last * 3.5; } else d[i] = w * .5; }
+    return b;
+  }
+  const gain = v => { const g = ctx.createGain(); g.gain.value = v; return g; };
+  const filt = (type, f, q) => { const n = ctx.createBiquadFilter(); n.type = type; n.frequency.value = f; if (q !== undefined) n.Q.value = q; return n; };
+  const loop = buf => { const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true; s.start(); return s; };
+  const lvl = k => (LV[scene] || {})[k] || 0;
+  function tone(dest, t, f0, f1, dur, vol, type){
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g).connect(dest); o.start(t); o.stop(t + dur + .05);
+  }
+  function panTo(dest){ if (ctx.createStereoPanner){ const p = ctx.createStereoPanner(); p.pan.value = R()*1.6 - .8; p.connect(dest); return p; } return dest; }
+  function birdPhrase(){
+    const out = panTo(bus.birds), t = ctx.currentTime + .05, base = 2400 + R()*2200, n = 2 + Math.floor(R()*5), down = R() < .5;
+    for (let i = 0; i < n; i++){
+      const st = t + i * (.08 + R()*.07);
+      if (down) tone(out, st, base*(1.15 + R()*.2), base*(.75 + R()*.15), .07 + R()*.05, .09);
+      else tone(out, st, base*.8, base*(1.3 + R()*.3), .05 + R()*.05, .08);
+    }
+  }
+  function cricket(){ const t = ctx.currentTime + .02; for (let j = 0; j < 3; j++) tone(bus.crickets, t + j*.045, 4500, 4400, .03, .035); }
+  function pingTone(dest){ const t = ctx.currentTime + .01; tone(dest, t, 1046, 1046, .5, .16, 'triangle'); tone(dest, t + .1, 1568, 1568, .6, .13, 'triangle'); }
+  function init(){
+    if (ctx) return true;
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return false;
+    try { ctx = new AC(); } catch(e){ return false; }
+    master = gain(.85); master.connect(ctx.destination);
+    ['hum','chatter','pings','stream','birds','wind','crickets'].forEach(k => { bus[k] = gain(0); bus[k].connect(master); });
+    const brown = noise('brown'); whiteBuf = noise('white');
+    const bp = filt('bandpass', 650, .55); loop(brown).connect(bp).connect(bus.stream);
+    const lfo = ctx.createOscillator(); lfo.frequency.value = .17; lfo.connect(gain(240)).connect(bp.frequency); lfo.start();
+    loop(whiteBuf).connect(filt('highpass', 2600)).connect(gain(.05)).connect(bus.stream);
+    const wg = gain(.6); loop(whiteBuf).connect(filt('lowpass', 380, .4)).connect(wg).connect(bus.wind);
+    const wl = ctx.createOscillator(); wl.frequency.value = .07; wl.connect(gain(.45)).connect(wg.gain); wl.start();
+    [[100,.07],[200,.03],[300,.012]].forEach(([f,v]) => { const o = ctx.createOscillator(); o.frequency.value = f; o.connect(gain(v)).connect(bus.hum); o.start(); });
+    const cbp = filt('bandpass', 800, 1.1), cg = gain(0); loop(whiteBuf).connect(cbp).connect(cg).connect(bus.chatter);
+    const chat = () => { if (enabled && lvl('chatter') > 0){ const t = ctx.currentTime; cg.gain.setTargetAtTime(R() < .22 ? 0 : .25 + R()*.75, t, .035); cbp.frequency.setTargetAtTime(450 + R()*900, t, .05); } setTimeout(chat, 110 + R()*170); };
+    const birds = () => { if (enabled && lvl('birds') > 0) birdPhrase(); setTimeout(birds, 600 + R()*2200); };
+    const crick = () => { if (enabled && lvl('crickets') > 0) cricket(); setTimeout(crick, 550 + R()*500); };
+    const pings = () => { if (enabled && lvl('pings') > 0) pingTone(bus.pings); setTimeout(pings, 3200 + R()*4200); };
+    chat(); birds(); crick(); pings();
+    return true;
+  }
+  function apply(fade){
+    if (!ctx) return;
+    const now = ctx.currentTime;
+    for (const k in bus){ const g = bus[k].gain; g.cancelScheduledValues(now); g.setValueAtTime(g.value, now); g.linearRampToValueAtTime(enabled ? lvl(k) : 0, now + fade); }
+  }
+  return {
+    userMuted:false,
+    get on(){ return enabled; },
+    enable(){ if (!init()) return false; if (ctx.state === 'suspended') ctx.resume(); enabled = true; apply(1); return true; },
+    disable(){ enabled = false; apply(.4); },
+    setScene(n, fade = 1.4){ if (!LV[n]) n = 'silent'; if (n === scene) return; scene = n; apply(fade); },
+    ping(){ if (ctx && enabled) pingTone(master); },
+    shutter(){
+      if (!ctx || !enabled) return;
+      const t = ctx.currentTime, s = ctx.createBufferSource(), g = gain(.0001);
+      s.buffer = whiteBuf; s.connect(filt('highpass', 1800)).connect(g).connect(master);
+      g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.5, t + .005); g.gain.exponentialRampToValueAtTime(.0001, t + .09);
+      g.gain.setValueAtTime(.0001, t + .12); g.gain.exponentialRampToValueAtTime(.35, t + .125); g.gain.exponentialRampToValueAtTime(.0001, t + .2);
+      s.start(t); s.stop(t + .25);
+    }
+  };
+})();
+function refreshAmbience(){
+  if (!Sound.on) return;
+  let s;
+  if (T.running) s = T.mode === 'old' ? 'beforeTest' : 'after';
+  else if (tour.on) s = tour.scene || 'after';
+  else s = state.p >= 95 ? 'before' : (state.t >= 20 ? 'night' : 'after');
+  Sound.setScene(s);
+}
+function syncSoundBtn(){ const b = $('soundBtn'); b.setAttribute('aria-pressed', Sound.on ? 'true' : 'false'); b.textContent = Sound.on ? 'Sound on' : 'Sound off'; }
+function autoSound(){ if (!Sound.userMuted && !Sound.on){ Sound.enable(); syncSoundBtn(); } refreshAmbience(); }
+$('soundBtn').addEventListener('click', () => {
+  if (Sound.on){ Sound.disable(); Sound.userMuted = true; }
+  else if (Sound.enable()){ Sound.userMuted = false; refreshAmbience(); }
+  else { $('soundBtn').textContent = 'Sound not supported'; $('soundBtn').disabled = true; return; }
+  syncSoundBtn();
+});
+
+/* ================= tour ================= */
+let stepTimers = [];
+const later = (ms, fn) => stepTimers.push(setTimeout(fn, ms));
+const every = (ms, fn) => stepTimers.push(setInterval(fn, ms));
+const stepDur = s => +$('pace').value * 1000 * (s.mult || 1);
+function addCallout(x, y, text, kind, delay){
+  const d = document.createElement('div');
+  d.className = 'callout ' + (kind || ''); d.textContent = text;
+  fx.appendChild(d); callouts.push({x, y, el:d}); layout();
+  later(delay, () => d.classList.add('on'));
+}
+function clearFx(){
+  stepTimers.forEach(t => { clearTimeout(t); clearInterval(t); }); stepTimers = [];
+  callouts.forEach(c => c.el.remove()); callouts = [];
+  ['polaroid','badge','clock'].forEach(id => $(id).classList.remove('on'));
+  fx.querySelectorAll('.rcard').forEach(n => n.remove());
+  svg.classList.remove('photo','breezy');
+  stopTween('t'); stopTween('rc');
+}
+function setGrown(on, instant){
+  if (instant){ svg.classList.add('notrans'); }
+  svg.classList.toggle('grown', on);
+  if (instant){ void svg.getBoundingClientRect(); svg.classList.remove('notrans'); }
+}
+function photoIntro(){
+  svg.classList.add('notrans', 'photo'); void svg.getBoundingClientRect(); svg.classList.remove('notrans');
+  $('polaroid').classList.add('on');
+  const fl = $('flash'); fl.classList.remove('go'); void fl.offsetWidth; fl.classList.add('go');
+  Sound.shutter();
+  later(2700, () => { svg.classList.remove('photo'); $('polaroid').classList.remove('on'); later(1000, () => $('badge').classList.add('on')); });
+}
+const EXAMPLE = {old:{wpm:30, acc:89, errors:12, dur:60}, new:{wpm:38, acc:96, errors:4, dur:60}};
+function loadR(){ try { return JSON.parse(localStorage.getItem('biophilic-focus-v1')) || {}; } catch(e){ return memR; } }
+let memR = {};
+function saveR(R){ memR = R; try { localStorage.setItem('biophilic-focus-v1', JSON.stringify(R)); } catch(e){} }
+function summary(d){
+  const pct = Math.round((d.new.wpm - d.old.wpm) / Math.max(1, d.old.wpm) * 100);
+  const ed = d.old.errors - d.new.errors;
+  return `${pct >= 0 ? '+' : ''}${pct}% typing speed · ${Math.abs(ed)} ${ed >= 0 ? 'fewer' : 'more'} errors in the new setup`;
+}
+function showResultsCard(){
+  const R = loadR(), real = !!(R.old && R.new), d = real ? R : EXAMPLE;
+  const card = document.createElement('div');
+  card.className = 'rcard';
+  card.innerHTML = `
+    <p class="rc-eyebrow">${real ? 'My' : 'Example'} 1-minute typing test</p>
+    <div class="rc-cols">
+      <div class="rc-col old"><h4>Old setup</h4><div class="mini" id="miniOld"></div>
+        <div class="rc-num"><b id="numOld">0</b><span>words / min</span></div><div class="rc-sub">${d.old.acc}% accuracy · ${d.old.errors} errors</div></div>
+      <div class="rc-col new"><h4>New setup</h4><div class="mini" id="miniNew"></div>
+        <div class="rc-num"><b id="numNew">0</b><span>words / min</span></div><div class="rc-sub">${d.new.acc}% accuracy · ${d.new.errors} errors</div></div>
+    </div>
+    <p class="rc-foot">${summary(d)}</p>
+    <p class="rc-note">${real ? 'Simulated old vs new conditions · one person' : 'Example numbers. Take the test below the room to show your own.'}</p>`;
+  fx.appendChild(card);
+  later(150, () => card.classList.add('on'));
+  const txt = 'the river below the town ran fast and bright';
+  const run = (id, speed, mistakes, ping) => {
+    const box = card.querySelector('#' + id); let i = 0, typed = '', bad = '', step = 0;
+    every(speed, () => {
+      step++;
+      if (bad){ bad = ''; }
+      else if (i < txt.length){ if (mistakes.includes(i) && !box.dataset['m' + i]){ box.dataset['m' + i] = 1; bad = 'x'; } else { typed += txt[i]; i++; } }
+      box.innerHTML = `${esc(typed)}${bad ? '<span class="bad">x</span>' : ''}<span class="caret"></span>${ping && step > 8 && step < 26 ? '<span class="ping">Group chat · 14 new</span>' : ''}`;
+    });
+  };
+  run('miniOld', 125, [6, 15, 27, 36], true);
+  run('miniNew', 72, [21], false);
+  later(2900, () => {
+    tween('rc', 1000, k => {
+      card.querySelector('#numOld').textContent = Math.round(d.old.wpm * ease(k));
+      card.querySelector('#numNew').textContent = Math.round(d.new.wpm * ease(k));
+    }, () => { card.querySelectorAll('.rc-sub').forEach(n => n.classList.add('on')); card.querySelector('.rc-foot').classList.add('on'); });
+  });
+}
+function runStep(s){
+  tour.scene = s.scene; refreshAmbience();
+  const D = stepDur(s);
+  if (s.move){
+    const m = s.move;
+    setGrown(true);
+    if (state.p > .5) goP(0, 800);
+    if (m.id !== 'lamp' && Math.abs(state.t - 12.5) > .1) goT(12.5, 900);
+    camTo(camFor(m.f[0], m.f[1], m.f[2]), 1600, () => { if (tour.on && STEPS[tour.i] === s) drift(D - 1600); });
+    select(m.id, {noZoom:true});
+    if (m.id === 'breeze') svg.classList.add('breezy');
+    if (m.pin) addCallout(m.pin[0], m.pin[1], m.pin[2], 'good', 1500);
+    if (m.id === 'lamp'){
+      stopTween('t'); goT(7, 600); $('clock').classList.add('on');
+      later(1300, () => tween('t', D * .7, k => setTime(7 + 16 * k)));
+    }
+    return;
+  }
+  showOverview();
+  switch (s.key){
+    case 'intro':
+      stopTween('p'); stopTween('cam'); setGrown(true, true); setP(100);
+      cam.x = 0; cam.y = 0; cam.w = 1200; applyCam(); setTime(12.5); photoIntro(); break;
+    case 'problems':
+      setP(100); camTo(FULL, 900);
+      BEFORE_CALLOUTS.forEach((c, i) => addCallout(c[0], c[1], c[2], '', 400 + i * 650)); break;
+    case 'reveal':
+      camTo(FULL, 700); stopTween('p'); setP(100); setGrown(false, true); goT(12.5, 300);
+      later(500, () => goP(0, 3400));
+      later(900, () => setGrown(true)); break;
+    case 'test':
+      setGrown(true); goP(0, 600); goT(12.5, 900); camTo(camFor(560, 400, 760), 1400); showResultsCard(); break;
+    case 'small':
+      setGrown(true); goP(0, 600); goT(12.5, 900); camTo(FULL, 1200);
+      GOOD_CALLOUTS.forEach((c, i) => addCallout(c[0], c[1], c[2], 'good', 700 + i * 500)); break;
+    case 'end':
+      setGrown(true); goT(12.5, 900); camTo(FULL, 1000); goP(50, 1400); break;
+  }
+}
+function buildDots(){
+  $('dots').innerHTML = STEPS.map((s, i) => `<button aria-label="Step ${i+1}: ${esc(s.title)}"><span></span></button>`).join('');
+  $('dots').querySelectorAll('button').forEach((b, i) => b.addEventListener('click', () => goStep(i)));
+}
+function goStep(i){
+  clearFx();
+  tour.i = i; tour.elapsed = 0;
+  const s = STEPS[i];
+  $('capTag').textContent = s.tag;
+  $('capCount').textContent = `${i+1} / ${STEPS.length}`;
+  $('capTitle').textContent = s.title;
+  $('capBody').textContent = s.body;
+  $('prevBtn').disabled = i === 0;
+  $('nextBtn').textContent = i === STEPS.length - 1 ? 'Finish' : 'Next';
+  $('dots').querySelectorAll('button').forEach((b, j) => { b.classList.toggle('done', j < i); b.firstChild.style.width = j < i ? '100%' : '0'; });
+  layout();
+  runStep(s);
+}
+function tick(now){
+  if (!tour.on) return;
+  const auto = $('autoAdv').checked;
+  if (!tour.paused && auto) tour.elapsed += now - tour.last;
+  tour.last = now;
+  const D = stepDur(STEPS[tour.i]);
+  const cur = $('dots').children[tour.i];
+  if (cur) cur.firstChild.style.width = (auto ? Math.min(100, tour.elapsed / D * 100) : 0) + '%';
+  if (auto && tour.elapsed >= D){
+    if (tour.i < STEPS.length - 1) goStep(tour.i + 1); else { endTour(true); return; }
+  }
+  tour.raf = requestAnimationFrame(tick);
+}
+function startTour(){
+  if (T.running) stopTest();
+  tour.on = true; tour.paused = false;
+  $('pauseBtn').textContent = 'Pause';
+  $('capIdle').hidden = true; $('capTour').hidden = false;
+  clearActive();
+  autoSound();
+  goStep(0);
+  tour.last = performance.now();
+  cancelAnimationFrame(tour.raf); tour.raf = requestAnimationFrame(tick);
+}
+function endTour(finished){
+  tour.on = false; cancelAnimationFrame(tour.raf); clearFx(); tour.scene = null;
+  $('capTour').hidden = true; $('capIdle').hidden = false;
+  $('idleText').innerHTML = finished
+    ? '<strong>Tour finished.</strong> Drag the handle or tap a number to explore.'
+    : '<strong>Drag the handle</strong> to compare, or tap a number to zoom in on a change.';
+  $('tourBtn').textContent = finished ? 'Replay tour' : 'Play tour';
+  setGrown(true); camTo(FULL, 1000); goP(50, 900); goT(12.5, 900); showOverview();
+  refreshAmbience();
+}
+const nextStep = () => { if (tour.i < STEPS.length - 1) goStep(tour.i + 1); else endTour(true); };
+const prevStep = () => { if (tour.i > 0) goStep(tour.i - 1); };
+function togglePause(){ tour.paused = !tour.paused; $('pauseBtn').textContent = tour.paused ? 'Resume' : 'Pause'; }
+$('tourBtn').addEventListener('click', startTour);
+$('presentBtn').addEventListener('click', async () => {
+  try { if (!document.fullscreenElement) await $('stage').requestFullscreen(); } catch(e){}
+  startTour();
+});
+$('exitBtn').addEventListener('click', () => { endTour(false); if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); });
+$('nextBtn').addEventListener('click', nextStep);
+$('prevBtn').addEventListener('click', prevStep);
+$('pauseBtn').addEventListener('click', togglePause);
+$('autoAdv').addEventListener('change', e => { $('pauseBtn').disabled = !e.target.checked; tour.elapsed = 0; });
+document.addEventListener('keydown', e => {
+  if (!tour.on) return;
+  const tag = document.activeElement ? document.activeElement.tagName : '';
+  if (/INPUT|SELECT|TEXTAREA/.test(tag)) return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown'){ e.preventDefault(); nextStep(); }
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp'){ e.preventDefault(); prevStep(); }
+  else if (e.key === ' ' && tag !== 'BUTTON'){ e.preventDefault(); togglePause(); }
+});
+let idleT = 0;
+$('stage').addEventListener('mousemove', () => {
+  $('stage').classList.remove('idle'); clearTimeout(idleT);
+  if (document.fullscreenElement) idleT = setTimeout(() => $('stage').classList.add('idle'), 2500);
+});
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement) $('stage').classList.remove('idle'); });
+
+/* ================= live typing test ================= */
+const PASSAGES = [
+  'a light rain had passed over the hills in the night, and by morning the air was cool and clear. small birds moved between the branches of the old trees, and the river below the town ran fast and bright. people walked slowly along the path beside the water, some talking quietly, others just listening to the sound of the current.',
+  'in the corner of the garden there is a wooden bench under a large tree. in summer its leaves make a moving pattern of light and shade on the grass. it is a good place to sit with a book, to think about a problem, or simply to rest your eyes on something green after a long day of work.',
+  'the forest path climbed slowly through tall pines until it reached a small lake. the water was so still that it held a perfect copy of the sky and the clouds. a family of ducks crossed from one side to the other, leaving soft lines behind them that faded long before they reached the shore.',
+  'early in the morning the market by the harbour is already busy. boats come in with the night’s catch, and the smell of salt and fresh bread fills the narrow streets. by the time the sun is high, most people have gone home, and only the gulls remain, calling to each other above the empty stalls.'
+].map(p => p.replace(/’/g, "'"));
+const TOASTS = [['Group chat','14 new messages'],['Mum','Did you eat yet?'],['Delivery','Your order is out for delivery'],['Reminder','Assignment due tomorrow, 9:00 AM'],['Social app','3 people liked your post'],['Battery','15% remaining'],['Group chat','"who\'s coming tonight??"'],['Email','Re: project feedback'],['Game','Your energy is full. Come back and play!'],['Calendar','Meeting in 10 minutes']];
+const arena = $('arena'), passEl = $('passage'), inp = $('typeInput');
+function renderPassage(){
+  const t = T.target, ty = T.typed; let h = '';
+  for (let i = 0; i < t.length; i++){
+    let cls = i < ty.length ? (ty[i] === t[i] ? 'ok' : 'bad') : (i === ty.length && T.running ? 'cur' : 'todo');
+    let c = t[i] === ' ' ? (cls === 'bad' ? '·' : ' ') : esc(t[i]);
+    h += `<span class="${cls}">${c}</span>`;
+  }
+  passEl.innerHTML = h;
+  const cur = passEl.querySelector('.cur') || passEl.children[Math.min(ty.length, t.length - 1)];
+  if (cur){ const lh = parseFloat(getComputedStyle(passEl).lineHeight) || 36; passEl.scrollTop = Math.max(0, cur.offsetTop - lh); }
+}
+const correctCount = () => { let c = 0; for (let i = 0; i < T.typed.length; i++) if (T.typed[i] === T.target[i]) c++; return c; };
+function liveStats(){
+  const mins = T.started ? (performance.now() - T.t0) / 60000 : 0;
+  $('tWpm').textContent = mins > .03 ? Math.round(correctCount() / 5 / mins) : 0;
+  $('tAcc').textContent = (T.keys ? Math.round((T.keys - T.errs) / T.keys * 100) : 100) + '%';
+}
+function startTest(mode){
+  if (tour.on) endTour(false);
+  stopTest();
+  Object.assign(T, {mode, dur:+$('testDur').value, typed:'', keys:0, errs:0, started:false, running:true});
+  T.target = [...PASSAGES].sort(() => Math.random() - .5).join(' ');
+  inp.value = '';
+  arena.className = 'arena ' + mode;
+  $('doneMsg').hidden = true;
+  $('tLeft').textContent = T.dur; $('tWpm').textContent = '0'; $('tAcc').textContent = '100%';
+  $('testMsg').textContent = mode === 'old'
+    ? 'Old setup: notifications, chatter and a flickering tube light. Start typing when ready.'
+    : 'New setup: daylight, plants and the sound of water. Start typing when ready.';
+  renderPassage(); inp.focus();
+  autoSound();
+}
+function testTick(){
+  if (!T.running) return;
+  const left = Math.max(0, T.dur - (performance.now() - T.t0) / 1000);
+  $('tLeft').textContent = Math.ceil(left);
+  liveStats();
+  if (left <= 0){ finishTest(); return; }
+  T.raf = requestAnimationFrame(testTick);
+}
+inp.addEventListener('input', () => {
+  if (!T.running){ inp.value = T.typed; return; }
+  const v = inp.value.slice(0, T.target.length);
+  if (!T.started){
+    T.started = true; T.t0 = performance.now(); testTick();
+    if (T.mode === 'old') startDistractions();
+  }
+  if (v.length > T.typed.length) for (let i = T.typed.length; i < v.length; i++){ T.keys++; if (v[i] !== T.target[i]) T.errs++; }
+  T.typed = v; inp.value = v;
+  renderPassage(); liveStats();
+});
+inp.addEventListener('paste', e => e.preventDefault());
+arena.addEventListener('click', () => { if (T.running) inp.focus(); });
+function startDistractions(){
+  let i = Math.floor(Math.random() * TOASTS.length);
+  const next = () => { if (!T.running) return; showToast(TOASTS[i++ % TOASTS.length]); T.dTimer = setTimeout(next, 3500 + Math.random()*3500); };
+  T.dTimer = setTimeout(next, 1500);
+  const fl = () => {
+    if (!T.running) return;
+    if (!RM){ const f = $('flick'); f.classList.remove('go'); void f.offsetWidth; f.classList.add('go'); }
+    T.fTimer = setTimeout(fl, 6000 + Math.random()*5000);
+  };
+  T.fTimer = setTimeout(fl, 4000);
+}
+function showToast([app, msg]){
+  const d = document.createElement('div');
+  d.className = 'toast'; d.innerHTML = `<b>${esc(app)}</b><span>${esc(msg)}</span>`;
+  $('toasts').prepend(d);
+  Sound.ping();
+  if (!RM){ arena.classList.remove('shake'); void arena.offsetWidth; arena.classList.add('shake'); }
+  setTimeout(() => d.classList.add('out'), 2600);
+  setTimeout(() => d.remove(), 3000);
+}
+function stopTest(){
+  T.running = false; cancelAnimationFrame(T.raf);
+  clearTimeout(T.dTimer); clearTimeout(T.fTimer);
+  $('toasts').innerHTML = '';
+  refreshAmbience();
+}
+function finishTest(){
+  const wpm = Math.round(correctCount() / 5 / (T.dur / 60));
+  const acc = T.keys ? Math.round((T.keys - T.errs) / T.keys * 100) : 0;
+  stopTest();
+  const R = loadR(); R[T.mode] = {wpm, acc, errors:T.errs, dur:T.dur, at:Date.now()}; saveR(R);
+  renderPassage();
+  const other = T.mode === 'old' ? 'new' : 'old';
+  $('doneMsg').innerHTML = `${T.mode === 'old' ? 'Old' : 'New'} setup: ${wpm} words / min, ${acc}% accuracy<br><span style="font:400 16px var(--body)">${R[other] ? 'Both done. Your comparison is below and in the tour.' : `Now try the ${other} setup.`}</span>`;
+  $('doneMsg').hidden = false;
+  $('testMsg').textContent = 'Time’s up.';
+  renderResults();
+}
+function renderResults(){
+  const R = loadR(), box = $('results');
+  if (!R.old && !R.new){ box.hidden = true; return; }
+  box.hidden = false;
+  const max = Math.max(R.old ? R.old.wpm : 0, R.new ? R.new.wpm : 0, 1) * 1.15;
+  const bar = (k, v, w, txt) => `<div class="bar2 ${k}"><span style="width:${v == null ? 0 : w}%"></span><em>${v == null ? 'not taken yet' : txt}</em></div>`;
+  const o = R.old, n = R.new;
+  box.innerHTML = `
+    <div class="res-grid">
+      <span></span><span class="h">Old setup</span><span class="h">New setup</span>
+      <span class="h">Speed</span>${bar('old', o && o.wpm, o && o.wpm / max * 100, o && `${o.wpm} wpm`)}${bar('new', n && n.wpm, n && n.wpm / max * 100, n && `${n.wpm} wpm`)}
+      <span class="h">Accuracy</span>${bar('old', o && o.acc, o && o.acc, o && `${o.acc}%`)}${bar('new', n && n.acc, n && n.acc, n && `${n.acc}%`)}
+      <span class="h">Errors</span>${bar('old', o && o.errors, o && Math.min(100, o.errors * 4), o && `${o.errors}`)}${bar('new', n && n.errors, n && Math.min(100, n.errors * 4), n && `${n.errors}`)}
+    </div>
+    ${o && n ? `<p class="res-sum">${summary(R)}</p>` : ''}
+    <div><button class="btn sm ghost" id="resetRes">Clear my results</button></div>`;
+  $('resetRes').addEventListener('click', () => { saveR({}); try { localStorage.removeItem('biophilic-focus-v1'); } catch(e){} renderResults(); });
+}
+$('startOld').addEventListener('click', () => startTest('old'));
+$('startNew').addEventListener('click', () => startTest('new'));
+
+/* ================= init ================= */
+T.target = PASSAGES[0];
+renderPassage();
+buildDots();
+setTime(12.5);
+applyCam();
+setP(50);
+showOverview();
+renderResults();
+syncSoundBtn();
+})();
+</script>
+</body>
+</html>
